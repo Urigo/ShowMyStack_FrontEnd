@@ -1,0 +1,28 @@
+<h3>Add New Stack</h3>
+<div alerts-panel clear-on-init="true"></div>
+<form class="form" role="form">
+    <div class="form-group">
+        <label for="title">Email address</label>
+        <input type="text" class="form-control" id="title" placeholder="Enter title" ng-model="stack.title" />
+    </div>
+    <div class="form-group">
+        <label for="ghUrl">GitHub URL</label>
+        <input type="text" class="form-control" id="ghUrl" placeholder="GitHub url" ng-model="stack.githubUrl" />
+    </div>
+    <div class="form-group" ng-show="gitHubInfo">
+        <h4>
+            <img ng-src="{{gitHubInfo.owner.avatar_url}}" class="owner-image img-rounded" />{{gitHubInfo.owner.login}} / {{gitHubInfo.name}}</h4>
+        <h6>{{gitHubInfo.description}}</h6>
+        <h6>{{gitHubInfo.forks_count}} forks, {{gitHubInfo.open_issues_count}} open issues</h6>
+    </div>
+    <div class="form-group">
+        <label for="langs">Languages:</label>
+        <input type="text" class="form-control" id="langs" ng-list required placeholder="Languages" ng-model="stack.languages" />
+    </div>
+    <div class="form-group">
+        <label for="thirdParties">Third Party Libraries:</label>
+        <input type="text" class="form-control" ng-list required id="thirdParties" placeholder="Third parties (like jQuery, AngularJS...)" ng-model="stack.thirdParties
+" />
+    </div>
+    <button type=" submit " class="btn btn-primary " ng-click="addStack() ">Add New Stack!</button>
+</form>

@@ -1,0 +1,13 @@
+<h3>Register</h3>
+<div alerts-panel clear-on-init="true"></div>
+<form class="form" role="form">
+    <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" class="form-control" id="email" placeholder="Enter email" ng-model="user.email" />
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" placeholder="Password" ng-model="user.password" />
+    </div>
+    <button type="submit" class="btn btn-primary" ng-click="register()">Register!</button>
+</form>
