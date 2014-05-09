@@ -13,7 +13,7 @@ showMyStackApp.controller('AddStackController', ['$scope', 'StacksService', 'Git
 
         $scope.$watch('stack.githubUrl', function(newValue) {
             if (angular.isDefined(newValue) && newValue !== '') {
-                var regexVerify = /([A-Za-z0-9]+@|http(|s)\:\/\/)([A-Za-z0-9.]+)(:|\/)([A-Za-z0-9\/]+)(:|\/)([A-Za-z0-9\/]+)(\.git)?/g.exec(newValue);
+                var regexVerify = /([A-Za-z0-9]+@|http(|s)\:\/\/)([A-Za-z0-9.]+)(:|\/)([A-Za-z0-9\/]+)(:|\/)(.*)(\.git)?/g.exec(newValue);
 
                 if (regexVerify !== null) {
                     GithubService.getRepoInfo({
