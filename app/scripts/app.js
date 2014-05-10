@@ -10,7 +10,8 @@ var showMyStackApp = angular
         'ui.bootstrap',
         'restangular',
         'ngStorage',
-        'multi-select'
+        'multi-select',
+        'checklist-model'
     ])
     .config(['$stateProvider', '$urlRouterProvider',
         function($stateProvider, $urlRouterProvider) {
@@ -21,7 +22,19 @@ var showMyStackApp = angular
                 .state('main', {
                     url: '/',
                     controller: 'MainController',
-                    templateUrl: 'views/main.html'
+                    templateUrl: 'views/main.html',
+                    resolve: {
+                        stacks: ['StacksService',
+                            function(StacksService) {
+                                return StacksService.getAll();
+                            }
+                        ],
+                        categories: ['DataService',
+                            function(DataService) {
+                                return DataService.getAllCategories();
+                            }
+                        ]
+                    }
                 })
                 .state('login', {
                     url: '/login',
@@ -110,6 +123,7 @@ var showMyStackApp = angular
 
             RestangularProvider.addElementTransformer('stacks', true, function(stacks) {
                 stacks.addRestangularMethod('add', 'post', 'add');
+                stacks.addRestangularMethod('getAll', 'get', 'all');
 
                 return stacks;
             });

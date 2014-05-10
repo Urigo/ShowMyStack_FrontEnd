@@ -7,5 +7,9 @@ showMyStackApp.service('StacksService', ['Restangular',
         this.add = function(stackObj) {
             return stackState.add(stackObj);
         };
+
+        this.getAll = function() {
+            return stackState.getAll();
+        };
     }
 ]);

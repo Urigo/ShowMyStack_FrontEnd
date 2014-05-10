@@ -3,11 +3,11 @@
 <form class="form" role="form">
     <div class="form-group">
         <label for="title">Project Name</label>
-        <input type="text" class="form-control" id="title" placeholder="Enter title" ng-model="stack.title" />
+        <input type="text" class="form-control" id="title" placeholder="Enter title" ng-model="addStackObj.title" />
     </div>
     <div class="form-group">
         <label for="ghUrl">GitHub URL</label>
-        <input type="text" class="form-control" id="ghUrl" placeholder="GitHub url" ng-model="stack.githubUrl" />
+        <input type="text" class="form-control" id="ghUrl" placeholder="GitHub url" ng-model="addStackObj.githubUrl" />
     </div>
     <div class="form-group" ng-show="gitHubInfo">
         <h4>
@@ -30,13 +30,45 @@
                 Select the {{language.langName}} frameworks you work with:
                 <div multi-select input-model="language.frameworks" button-label="icon frameworkName" item-label="icon frameworkName" tick-property="ticked">
                 </div>
+                <br />
+                <br />
                 <accordion close-others="false">
                     <accordion-group ng-repeat="framework in language.frameworks | filter:{ticked:true}">
                         <accordion-heading>
-                            {{framework.frameworkName}}
+                            {{framework.frameworkName}} Extensions
                         </accordion-heading>
                         What version of {{framework.frameworkName}} you use?
                         <div multi-select input-model="framework.versions" selection-mode="single" button-label="versionNumber" item-label="versionNumber" tick-property="ticked">
+                        </div>
+                        <br />
+                        <br />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Extensions Categories</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <select ng-model="framework.selectedCategories" ng-options="category.categoryName for category in framework.categories | orderBy:'_id'" multiple="multiple" class="form-control select-extensions">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Extensions</h3>
+                                    </div>
+                                    <div class="panel-body select-extensions-container">
+                                        <label ng-repeat="extension in framework.extensions | filter: filterExtensions(framework.selectedCategories)">
+                                            <input type="checkbox" checklist-model="framework.selectedExtensions" checklist-value="extension" />&nbsp;{{extension.extensionName}}
+                                            <select ng-show="(framework.selectedExtensions | filter: extension._id).length > 0" ng-model="extension.selectedVersion" ng-options="version._id as version.versionNumber for version in extension.versions">
+                                                <option value="">Select Version</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </accordion-group>
                 </accordion>

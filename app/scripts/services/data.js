@@ -38,5 +38,9 @@ showMyStackApp.service('DataService', ['Restangular',
         this.getAllFrameworks = function() {
             return frameworkState.getAll();
         };
+
+        this.getExtensionsByFrameworkAndLanguage = function(frameworkId, langId) {
+            return extensionState.one('getByFramework', frameworkId).one('andLanguage', langId).get();
+        };
     }
 ]);
