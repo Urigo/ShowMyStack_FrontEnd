@@ -20,7 +20,7 @@ showMyStackApp.controller('AdminController', ['$scope', 'DataService', 'AlertsHa
 
         $scope.$watch('addExtensionObj.githubUrl', function(newValue) {
             $scope.handleGhUrlChange(newValue, function(info) {
-                $scope.addFrameworkObj.extensionName = info.name;
+                $scope.addExtensionObj.extensionName = info.name;
             }, function(tags) {
                 $scope.addExtensionObj.versions = _.pluck(tags, 'name');
             });
