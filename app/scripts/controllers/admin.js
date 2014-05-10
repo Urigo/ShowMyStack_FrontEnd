@@ -1,7 +1,7 @@
 'use strict';
 
-showMyStackApp.controller('AdminController', ['$scope', 'DataService', 'AlertsHandlerService', 'languages', 'frameworks', 'categories', '$filter',
-    function($scope, DataService, AlertsHandlerService, languages, frameworks, categories, $filter) {
+showMyStackApp.controller('AdminController', ['$scope', 'DataService', 'AlertsHandlerService', 'languages', 'frameworks', 'categories', '$filter', 'GithubService',
+    function($scope, DataService, AlertsHandlerService, languages, frameworks, categories, $filter, GithubService) {
         $scope.languages = angular.copy(languages);
         $scope.categories = angular.copy(categories);
         $scope.frameworks = angular.copy(frameworks);
@@ -13,6 +13,51 @@ showMyStackApp.controller('AdminController', ['$scope', 'DataService', 'AlertsHa
                 obj.icon = '<img class="data-image img-rounded" src="' + obj.icon + '" />';
             }
         }
+
+        // GitHub info object
+        $scope.gitHubInfo = null;
+        $scope.gitHubInfoTags = null;
+
+        $scope.$watch('addExtensionObj.githubUrl', function(newValue) {
+            $scope.handleGhUrlChange(newValue, function(info) {
+                $scope.addFrameworkObj.extensionName = info.name;
+            }, function(tags) {
+                $scope.addExtensionObj.versions = _.pluck(tags, 'name');
+            });
+        });
+
+        $scope.$watch('addFrameworkObj.githubUrl', function(newValue) {
+            $scope.handleGhUrlChange(newValue, function(info) {
+                $scope.addFrameworkObj.frameworkName = info.name;
+            }, function(tags) {
+                $scope.addFrameworkObj.versions = _.pluck(tags, 'name');
+            });
+        });
+
+        $scope.handleGhUrlChange = function(newValue, infoCb, tagsCb) {
+            if (angular.isDefined(newValue) && newValue !== '') {
+                var regexVerify = /([A-Za-z0-9]+@|http(|s)\:\/\/)([A-Za-z0-9.]+)(:|\/)([A-Za-z0-9\-\/]+)(:|\/)(.*)(\.git)?/g.exec(newValue);
+
+                if (regexVerify !== null) {
+                    GithubService.getRepoInfo({
+                        user: regexVerify[5].replace('/', ''),
+                        repo: regexVerify[7].replace('/', ''),
+                    }, function(response) {
+                        $scope.gitHubInfo = response.data;
+                        infoCb($scope.gitHubInfo);
+                    });
+
+                    GithubService.getRepoInfo({
+                        user: regexVerify[5].replace('/', ''),
+                        repo: regexVerify[7].replace('/', ''),
+                        spec: 'tags'
+                    }, function(response) {
+                        $scope.gitHubInfoTags = response.data;
+                        tagsCb($scope.gitHubInfoTags);
+                    });
+                }
+            }
+        };
 
         angular.forEach($scope.categories, function(cat) {
             prepareForMultiSelect(cat);

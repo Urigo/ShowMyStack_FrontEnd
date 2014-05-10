@@ -67,6 +67,15 @@ var showMyStackApp = angular
                     controller: 'ProfileController',
                     templateUrl: 'views/profile.html'
                 })
+                .state('authorized.logout', {
+                    url: '/logout',
+                    controller: ['User', '$state',
+                        function(User, $state) {
+                            User.clearUser();
+                            $state.go('login');
+                        }
+                    ]
+                })
                 .state('admin', {
                     abstract: true,
                     templateUrl: 'views/authrize_template.html',

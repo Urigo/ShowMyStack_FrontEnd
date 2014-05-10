@@ -4,13 +4,13 @@ showMyStackApp.service('User', ['$localStorage', 'Restangular',
 
     function($localStorage, Restangular) {
         this.$storage = $localStorage;
-        this.$storage.userDetails = this.$storage.userDetails;
+        this.$storage.userDetails;
         this.alerts = [];
 
         var usersState = Restangular.all('users');
 
         this.getAuthToken = function() {
-            if (angular.isDefined(this.$storage.userDetails.authToken)) {
+            if (angular.isDefined(this.$storage.userDetails) && angular.isDefined(this.$storage.userDetails.authToken)) {
                 return this.$storage.userDetails.authToken;
             }
 
@@ -26,6 +26,7 @@ showMyStackApp.service('User', ['$localStorage', 'Restangular',
         };
 
         this.setUserFromResponse = function(userDetails) {
+            this.$storage.userDetails = {};
             this.$storage.userDetails.user = userDetails.user;
             this.$storage.userDetails.authToken = userDetails.access_token;
             this.$storage.userDetails.isLoggedIn = true;
@@ -33,6 +34,7 @@ showMyStackApp.service('User', ['$localStorage', 'Restangular',
 
         this.clearUser = function() {
             delete this.$storage.userDetails;
+            this.$storage.userDetails;
         };
 
         this.isAuthenticated = function() {
