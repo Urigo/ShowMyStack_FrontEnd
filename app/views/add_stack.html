@@ -37,13 +37,15 @@
                         <accordion-heading>
                             {{framework.frameworkName}} Extensions
                         </accordion-heading>
-                        What version of {{framework.frameworkName}} you use?
-                        <div multi-select input-model="framework.versions" selection-mode="single" button-label="versionNumber" item-label="versionNumber" tick-property="ticked">
-                        </div>
+                        <span ng-show="framework.versions.length > 0">
+                            What version of {{framework.frameworkName}} you use?
+                            <div multi-select input-model="framework.versions" selection-mode="single" button-label="versionNumber" item-label="versionNumber" tick-property="ticked">
+                            </div>
+                        </span>
                         <br />
                         <br />
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h3 class="panel-title">Extensions Categories</h3>
@@ -54,19 +56,23 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-7">
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h3 class="panel-title">Extensions</h3>
                                     </div>
                                     <div class="panel-body select-extensions-container">
-                                        <label ng-repeat="extension in framework.extensions | filter: filterExtensions(framework.selectedCategories)">
-                                            <input type="checkbox" checklist-model="framework.selectedExtensions" checklist-value="extension" />&nbsp;{{extension.extensionName}}
-                                            <select ng-show="(framework.selectedExtensions | filter: extension._id).length > 0" ng-model="extension.selectedVersion" ng-options="version._id as version.versionNumber for version in extension.versions">
-                                                <option value="">Select Version</option>
-                                            </select>
-                                        </label>
+                                        <span ng-repeat="extension in framework.extensions | filter: filterExtensions(framework.selectedCategories)">
+                                            <label>
+                                                <input type="checkbox" checklist-model="framework.selectedExtensions" checklist-value="extension" />&nbsp;{{extension.extensionName}}
+                                                <select ng-show="(framework.selectedExtensions | filter: extension._id).length > 0" ng-model="extension.selectedVersion" ng-options="version._id as version.versionNumber for version in extension.versions">
+                                                    <option value="">Select Version</option>
+                                                </select>
+                                            </label>
+                                            <br />
+                                        </span>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
