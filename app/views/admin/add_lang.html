@@ -1,0 +1,13 @@
+<h3>Add Programming Language</h3>
+<div alerts-panel clear-on-init="true"></div>
+<form class="form" role="form">
+    <div class="form-group">
+        <label for="name">Language Name</label>
+        <input type="text" class="form-control" id="name" placeholder="Enter name" ng-model="addLangObj.langName" />
+    </div>
+    <div class="form-group">
+        <label for="icon">Icon URL</label>
+        <input type="text" class="form-control" id="icon" placeholder="Icon URL" ng-model="addLangObj.icon" />
+    </div>
+    <button type=" submit " class="btn btn-primary " ng-click="addLang() ">Add New Language!</button>
+</form>

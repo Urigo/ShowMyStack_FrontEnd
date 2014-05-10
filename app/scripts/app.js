@@ -9,7 +9,8 @@ var showMyStackApp = angular
         'ui.router',
         'ui.bootstrap',
         'restangular',
-        'ngStorage'
+        'ngStorage',
+        'multi-select'
     ])
     .config(['$stateProvider', '$urlRouterProvider',
         function($stateProvider, $urlRouterProvider) {
@@ -39,14 +40,61 @@ var showMyStackApp = angular
                 .state('authorized.addStack', {
                     url: '/addStack',
                     controller: 'AddStackController',
-                    templateUrl: 'views/add_stack.html'
+                    templateUrl: 'views/add_stack.html',
+                    resolve: {
+                        languages: ['DataService',
+                            function(DataService) {
+                                return DataService.getAllLanguages();
+                            }
+                        ]
+                    }
                 })
                 .state('authorized.profile', {
                     url: '/profile',
                     controller: 'ProfileController',
                     templateUrl: 'views/profile.html'
+                })
+                .state('admin', {
+                    abstract: true,
+                    templateUrl: 'views/authrize_template.html',
+                    resolve: {
+                        languages: ['DataService',
+                            function(DataService) {
+                                return DataService.getAllLanguages();
+                            }
+                        ],
+                        categories: ['DataService',
+                            function(DataService) {
+                                return DataService.getAllCategories();
+                            }
+                        ],
+                        frameworks: ['DataService',
+                            function(DataService) {
+                                return DataService.getAllFrameworks();
+                            }
+                        ]
+                    }
+                })
+                .state('admin.addLang', {
+                    url: '/admin/addLang',
+                    controller: 'AdminController',
+                    templateUrl: 'views/admin/add_lang.html'
+                })
+                .state('admin.addFramework', {
+                    url: '/admin/addFramework',
+                    controller: 'AdminController',
+                    templateUrl: 'views/admin/add_framework.html'
+                })
+                .state('admin.addCategory', {
+                    url: '/admin/addCategory',
+                    controller: 'AdminController',
+                    templateUrl: 'views/admin/add_category.html'
+                })
+                .state('admin.addExtension', {
+                    url: '/admin/addExtension',
+                    controller: 'AdminController',
+                    templateUrl: 'views/admin/add_extension.html'
                 });
-
         }
     ])
     .config(['RestangularProvider', 'serverUrl',
@@ -64,6 +112,34 @@ var showMyStackApp = angular
                 stacks.addRestangularMethod('add', 'post', 'add');
 
                 return stacks;
+            });
+
+            RestangularProvider.addElementTransformer('language', true, function(language) {
+                language.addRestangularMethod('add', 'post', 'add');
+                language.addRestangularMethod('getAll', 'get', 'all');
+
+                return language;
+            });
+
+            RestangularProvider.addElementTransformer('framework', true, function(framework) {
+                framework.addRestangularMethod('add', 'post', 'add');
+                framework.addRestangularMethod('getAll', 'get', 'all');
+
+                return framework;
+            });
+
+            RestangularProvider.addElementTransformer('category', true, function(category) {
+                category.addRestangularMethod('add', 'post', 'add');
+                category.addRestangularMethod('getAll', 'get', 'all');
+
+                return category;
+            });
+
+            RestangularProvider.addElementTransformer('extension', true, function(extension) {
+                extension.addRestangularMethod('add', 'post', 'add');
+                extension.addRestangularMethod('getAll', 'get', 'all');
+
+                return extension;
             });
 
             RestangularProvider.addElementTransformer('auth', true, function(auth) {
