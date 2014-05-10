@@ -1,3 +1,3 @@
 'use strict';
 
-showMyStackApp.constant('serverUrl', 'http://localhost:8001/');
+showMyStackApp.constant('serverUrl', 'http://young-woodland-7540.herokuapp.com/');
