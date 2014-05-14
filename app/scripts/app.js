@@ -52,12 +52,39 @@ var showMyStackApp = angular
                 })
                 .state('authorized.addStack', {
                     url: '/addStack',
-                    controller: 'AddStackController',
-                    templateUrl: 'views/add_stack.html',
+                    title: 'Add New Stack',
+                    doActionText: 'Add New Stack!',
+                    controller: 'AddEditStackController',
+                    templateUrl: 'views/add_edit_stack.html',
                     resolve: {
                         languages: ['DataService',
                             function(DataService) {
                                 return DataService.getAllLanguages();
+                            }
+                        ],
+                        stackInfo: [
+
+                            function() {
+                                return {};
+                            }
+                        ]
+                    }
+                })
+                .state('authorized.editStack', {
+                    url: '/editStack/:stackId',
+                    title: 'Edit Existing Stack',
+                    doActionText: 'Save Stack!',
+                    controller: 'AddEditStackController',
+                    templateUrl: 'views/add_edit_stack.html',
+                    resolve: {
+                        languages: ['DataService',
+                            function(DataService) {
+                                return DataService.getAllLanguages();
+                            }
+                        ],
+                        stackInfo: ['StacksService', '$stateParams',
+                            function(StacksService, $stateParams) {
+                                return StacksService.getById($stateParams.stackId);
                             }
                         ]
                     }

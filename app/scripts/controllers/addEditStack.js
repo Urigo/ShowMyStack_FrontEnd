@@ -1,7 +1,10 @@
 'use strict';
 
-showMyStackApp.controller('AddStackController', ['$scope', 'StacksService', 'GithubService', 'AlertsHandlerService', 'languages', '$filter', 'DataService',
-    function($scope, StacksService, GithubService, AlertsHandlerService, languages, $filter, DataService) {
+showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 'GithubService', 'AlertsHandlerService', 'languages', '$filter', 'DataService', '$state', 'stackInfo',
+    function($scope, StacksService, GithubService, AlertsHandlerService, languages, $filter, DataService, $state, stackInfo) {
+        $scope.pageTitle = $state.current.title;
+        $scope.buttonText = $state.current.doActionText;
+
         // Prepare the language and frameworks array to work with multiselect directive
         $scope.languages = angular.copy(languages);
 
@@ -11,6 +14,71 @@ showMyStackApp.controller('AddStackController', ['$scope', 'StacksService', 'Git
             if (obj.hasOwnProperty('icon')) {
                 obj.icon = '<img class="data-image img-rounded" src="' + obj.icon + '" />';
             }
+        }
+
+        angular.forEach($scope.languages, function(lang) {
+            prepareForMultiSelect(lang);
+
+            angular.forEach(lang.frameworks, function(fw) {
+                prepareForMultiSelect(fw);
+
+                angular.forEach(fw.versions, function(ver) {
+                    prepareForMultiSelect(ver);
+                });
+            });
+        });
+
+        // Empty object of the created object
+        $scope.addStackObj = {
+            title: '',
+            githubUrl: '',
+            languages: []
+        };
+
+        $scope.isEdit = false;
+
+        if ($state.current.name === 'authorized.editStack') {
+            $scope.isEdit = true;
+            $scope.addStackObj.title = stackInfo.title;
+            $scope.addStackObj.githubUrl = stackInfo.githubUrl;
+
+            // Initalize the display object to the data from the server
+            angular.forEach(stackInfo.languages, function(lang) {
+                var foundLang = $filter('filter')($scope.languages, {
+                    _id: lang.lang
+                })[0];
+
+                foundLang.ticked = true;
+
+                angular.forEach(lang.frameworks, function(fw) {
+                    var foundFw = $filter('filter')(foundLang.frameworks, {
+                        _id: fw.framework
+                    })[0];
+                    foundFw.ticked = true;
+
+                    $filter('filter')(foundFw.versions, {
+                        _id: fw.frameworkVersion
+                    })[0].ticked = true;
+
+                    foundFw.selectedExtensions = [];
+
+                    DataService.getExtensionsByFrameworkAndLanguage(foundFw._id, foundLang._id).then(function(response) {
+                        foundFw.extensions = response.extensions;
+
+                        angular.forEach(fw.extensions, function(ext) {
+                            var foundExt = $filter('filter')(foundFw.extensions, {
+                                _id: ext.extension
+                            })[0];
+
+                            if (ext.hasOwnProperty('version')) {
+                                foundExt.selectedVersion = ext.version;
+                            }
+
+                            foundFw.selectedExtensions.push(foundExt);
+                        });
+                    });
+                });
+            });
         }
 
         $scope.$watch('languages', function(newValue) {
@@ -32,21 +100,7 @@ showMyStackApp.controller('AddStackController', ['$scope', 'StacksService', 'Git
                     }
                 });
             });
-
         }, true);
-
-        angular.forEach($scope.languages, function(lang) {
-            prepareForMultiSelect(lang);
-
-            angular.forEach(lang.frameworks, function(fw) {
-                prepareForMultiSelect(fw);
-
-                angular.forEach(fw.versions, function(ver) {
-                    prepareForMultiSelect(ver);
-                });
-            });
-        });
-
 
         $scope.filterExtensions = function(selectedCategories) {
             return function(extension) {
@@ -69,13 +123,6 @@ showMyStackApp.controller('AddStackController', ['$scope', 'StacksService', 'Git
 
                 return true;
             };
-        };
-
-        // Empty object of the created object
-        $scope.addStackObj = {
-            title: '',
-            githubUrl: '',
-            languages: []
         };
 
         // GitHub info object
@@ -133,11 +180,15 @@ showMyStackApp.controller('AddStackController', ['$scope', 'StacksService', 'Git
                 $scope.addStackObj.languages.push(langObject);
             });
 
-            console.log($scope.addStackObj);
-
-            StacksService.add($scope.addStackObj).then(function() {
-                AlertsHandlerService.addSuccess('Stack Successfully added!');
-            });
+            if ($scope.isEdit) {
+                StacksService.edit(stackInfo._id, $scope.addStackObj).then(function() {
+                    AlertsHandlerService.addSuccess('Stack Successfully edited!');
+                });
+            } else {
+                StacksService.add($scope.addStackObj).then(function() {
+                    AlertsHandlerService.addSuccess('Stack Successfully added!');
+                });
+            }
         };
     }
 ]);

@@ -8,8 +8,16 @@ showMyStackApp.service('StacksService', ['Restangular',
             return stackState.add(stackObj);
         };
 
+        this.edit = function(stackId, stackObj) {
+            return stackState.customPUT(stackObj, 'edit/' + stackId);
+        };
+
         this.getAll = function() {
             return stackState.getAll();
+        };
+
+        this.getById = function(stackId) {
+            return stackState.one('getById', stackId).get();
         };
     }
 ]);

@@ -1,11 +1,11 @@
 <accordion close-others="false">
     <accordion-group ng-repeat="stack in stacks">
         <accordion-heading>
+        <button class="btn btn-warning pull-right" ui-sref="authorized.editStack({stackId: stack._id})">Edit</button>
             {{stack.title}}
         </accordion-heading>
         Project
         <strong>{{stack.title}}</strong>&nbsp;uses {{stack.languages.length}} programming languages.
-
         <accordion close-others="false">
             <accordion-group ng-repeat="lang in stack.languages">
                 <accordion-heading>
