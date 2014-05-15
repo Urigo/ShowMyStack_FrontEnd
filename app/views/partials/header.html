@@ -2,10 +2,10 @@
     <li class="active"><a ui-sref="main">Home</a>
     </li>
     <li ng-hide="userDetails.isLoggedIn">
-        <a ui-sref="login">Login</a>
+        <a ui-sref="unauthorized.login">Login</a>
     </li>
     <li ng-hide="userDetails.isLoggedIn">
-        <a ui-sref="register">Register</a>
+        <a ui-sref="unauthorized.register">Register</a>
     </li>
     <li ng-show="userDetails.isLoggedIn">
         <a ui-sref="authorized.addStack">Add To Stack</a>

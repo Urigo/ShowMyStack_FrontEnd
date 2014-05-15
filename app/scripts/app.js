@@ -36,19 +36,27 @@ var showMyStackApp = angular
                         ]
                     }
                 })
-                .state('login', {
+				.state('error', {
+					url: '/error',
+					templateUrl: 'views/errors/server_down.html'
+				})
+				.state('unauthorized', {
+					abstract: true,
+					templateUrl: 'views/authorize_template.html'
+				})
+                .state('unauthorized.login', {
                     url: '/login',
                     controller: 'LoginController',
                     templateUrl: 'views/login.html'
                 })
-                .state('register', {
+                .state('unauthorized.register', {
                     url: '/register',
                     controller: 'RegisterController',
                     templateUrl: 'views/register.html'
                 })
                 .state('authorized', {
                     abstract: true,
-                    templateUrl: 'views/authrize_template.html',
+                    templateUrl: 'views/authorize_template.html'
                 })
                 .state('authorized.addStack', {
                     url: '/addStack',
@@ -99,13 +107,13 @@ var showMyStackApp = angular
                     controller: ['User', '$state',
                         function(User, $state) {
                             User.clearUser();
-                            $state.go('login');
+                            $state.go('unauthorized.login');
                         }
                     ]
                 })
                 .state('admin', {
                     abstract: true,
-                    templateUrl: 'views/authrize_template.html',
+                    templateUrl: '../views/authorize_template.html',
                     resolve: {
                         languages: ['DataService',
                             function(DataService) {
@@ -202,16 +210,27 @@ var showMyStackApp = angular
             });
         }
     ])
-    .run(['Restangular', 'AlertsHandlerService', 'User',
-        function(Restangular, AlertsHandlerService, User) {
+    .run(['Restangular', 'AlertsHandlerService', 'User', '$rootScope', '$state',
+        function(Restangular, AlertsHandlerService, User, $rootScope, $state) {
             // Set interceptor for errors from the server
             Restangular.setErrorInterceptor(
                 function(resp) {
-                    if (angular.isObject(resp.data.message) && resp.data.message.name === 'MongoError') {
-                        AlertsHandlerService.addError(resp.data.message.err);
-                    } else {
-                        AlertsHandlerService.addError(resp.data.message);
-                    }
+					if (resp.status === 0)
+					{
+						$state.go('error');
+					}
+					else if (resp.status === 401)
+					{
+						$state.go('unauthorized.login');
+					}
+					else
+					{
+						if (angular.isObject(resp.data.message) && resp.data.message.name === 'MongoError') {
+							AlertsHandlerService.addError(resp.data.message.err);
+						} else {
+							AlertsHandlerService.addError(resp.data.message);
+						}
+					}
 
                     return false;
                 });
@@ -219,5 +238,10 @@ var showMyStackApp = angular
             Restangular.setDefaultHeaders({
                 Authorization: 'Bearer ' + User.getAuthToken()
             });
-        }
+
+			$rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams, error)
+			{
+				console.log(error);
+			});
+		}
     ]);
