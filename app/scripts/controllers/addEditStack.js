@@ -5,7 +5,6 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
         $scope.pageTitle = $state.current.title;
         $scope.buttonText = $state.current.doActionText;
 
-
 		$scope.addEditStackObj = {
 			title: '',
 			githubUrl: '',
@@ -24,20 +23,24 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 			$scope.addEditStackObj.title = stackInfo.title;
 			$scope.addEditStackObj.githubUrl = stackInfo.githubUrl;
 			$scope.selectedLanguages = angular.copy(stackInfo.languages);
-			console.log($scope.selectedLanguages );
+			console.log($scope.selectedLanguages);
 		}
 
 		$scope.getSingleObjectFromArrayById = function(arr, obj, idProp)
 		{
 			var findObj = {};
-			findObj['_id'] = obj[idProp];
+			findObj._id = obj[idProp];
 
 			return $filter('filter')(arr, findObj)[0];
 		};
 
+		$scope.compareExtensionObject = function(ext1, ext2)
+		{
+			return ext1.extension === ext2.extension;
+		};
 
-        $scope.$watch('selectedLanguages', function(newValue, oldValue) {
-			angular.forEach(_.difference(newValue, oldValue), function(selectedLang)
+        $scope.$watch('selectedLanguages', function(newValue) {
+			angular.forEach(newValue, function(selectedLang)
 			{
 				var langObject = _.find($scope.languages, {_id: selectedLang.lang});
 

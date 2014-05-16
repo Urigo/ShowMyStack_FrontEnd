@@ -23,7 +23,7 @@
     <div class="form-group" ng-show="selectedLanguages.length > 0">
         <label for="thirdParties">Frameworks</label>
         <accordion close-others="false">
-            <accordion-group ng-repeat="langId in selectedLanguages" ng-init="language = getSingleObjectFromArrayById(languages, langId, 'lang'); langId.frameworks = []">
+            <accordion-group ng-repeat="langId in selectedLanguages" ng-init="language = getSingleObjectFromArrayById(languages, langId, 'lang'); langId.frameworks || (langId.frameworks = [])">
                 <form>
                     <accordion-heading>
                         {{language.langName}} Frameworks
@@ -34,7 +34,7 @@
                     <br />
                     <br />
                     <accordion close-others="false">
-                        <accordion-group ng-repeat="frameworkId in langId.frameworks" ng-init="framework = getSingleObjectFromArrayById(language.frameworks, frameworkId, 'framework'); frameworkId.extensions = []">
+                        <accordion-group ng-repeat="frameworkId in langId.frameworks" ng-init="framework = getSingleObjectFromArrayById(language.frameworks, frameworkId, 'framework'); frameworkId.extensions || (frameworkId.extensions = [])">
                             <accordion-heading>
                                 {{framework.frameworkName}} Extensions
                             </accordion-heading>
@@ -68,6 +68,8 @@
                                                     <input type="checkbox"
                                                            checklist-model="frameworkId.extensions"
                                                            checklist-value="{extension: extension._id}"
+                                                           comparator="compareExtensionObject"
+
                                                             />&nbsp;{{extension.extensionName}}
                                                     <select ng-show="(frameworkId.extensions | filter: extension._id).length > 0" ng-model="(frameworkId.extensions | filter:{extension: extension._id})[0].version"
                                                             ng-options="version._id as version.versionNumber for version in extension.versions">
