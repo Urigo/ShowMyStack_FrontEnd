@@ -3,11 +3,11 @@
 <form class="form" role="form">
     <div class="form-group">
         <label for="title">Project Name</label>
-        <input type="text" class="form-control" id="title" placeholder="Enter title" ng-model="addStackObj.title" />
+        <input type="text" class="form-control" id="title" placeholder="Enter title" ng-model="addEditStackObj.title" />
     </div>
     <div class="form-group">
         <label for="ghUrl">GitHub URL</label>
-        <input type="text" class="form-control" id="ghUrl" placeholder="GitHub url" ng-model="addStackObj.githubUrl" />
+        <input type="text" class="form-control" id="ghUrl" placeholder="GitHub url" ng-model="addEditStackObj.githubUrl" />
     </div>
     <div class="form-group" ng-show="gitHubInfo">
         <h4>
@@ -17,67 +17,73 @@
     </div>
     <div class="form-group">
         <label for="langs">Languages</label>
-        <div multi-select input-model="languages" button-label="icon langName" item-label="icon langName" tick-property="ticked">
-        </div>
+        <div dropdown-multiselect id="langs" selected-model="selectedLanguages" options="languages" extra-settings="multiselectDropdownLanguagesOptions"></div>
+        <br /><br />
     </div>
-    <div class="form-group" ng-show="(languages | filter:{ticked:true}).length > 0">
+    <div class="form-group" ng-show="selectedLanguages.length > 0">
         <label for="thirdParties">Frameworks</label>
         <accordion close-others="false">
-            <accordion-group ng-repeat="language in languages | filter:{ticked:true}">
-                <accordion-heading>
-                    {{language.langName}} Frameworks
-                </accordion-heading>
-                Select the {{language.langName}} frameworks you work with:
-                <div multi-select input-model="language.frameworks" button-label="icon frameworkName" item-label="icon frameworkName" tick-property="ticked">
-                </div>
-                <br />
-                <br />
-                <accordion close-others="false">
-                    <accordion-group ng-repeat="framework in language.frameworks | filter:{ticked:true}">
-                        <accordion-heading>
-                            {{framework.frameworkName}} Extensions
-                        </accordion-heading>
-                        <span ng-show="framework.versions.length > 0">
-                            What version of {{framework.frameworkName}} you use?
-                            <div multi-select input-model="framework.versions" selection-mode="single" button-label="versionNumber" item-label="versionNumber" tick-property="ticked">
-                            </div>
-                        </span>
-                        <br />
-                        <br />
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <h3 class="panel-title">Extensions Categories</h3>
-                                    </div>
-                                    <div class="panel-body">
-                                        <select ng-model="framework.selectedCategories" ng-options="category.categoryName for category in framework.categories | orderBy:'_id'" multiple="multiple" class="form-control select-extensions">
-                                        </select>
+            <accordion-group ng-repeat="langId in selectedLanguages" ng-init="language = getSingleObjectFromArrayById(languages, langId, 'lang'); langId.frameworks = []">
+                <form>
+                    <accordion-heading>
+                        {{language.langName}} Frameworks
+                    </accordion-heading>
+                    Select the {{language.langName}} frameworks you work with:
+                    <div dropdown-multiselect selected-model="langId.frameworks" options="language.frameworks"
+                         extra-settings="multiselectDropdownFrameworkOptions"></div>
+                    <br />
+                    <br />
+                    <accordion close-others="false">
+                        <accordion-group ng-repeat="frameworkId in langId.frameworks" ng-init="framework = getSingleObjectFromArrayById(language.frameworks, frameworkId, 'framework'); frameworkId.extensions = []">
+                            <accordion-heading>
+                                {{framework.frameworkName}} Extensions
+                            </accordion-heading>
+                            <span ng-show="framework.versions.length > 0">
+                                What version of {{framework.frameworkName}} you use?
+                                <select class="form-control" ng-model="frameworkId.frameworkVersion"
+                                        ng-options="version._id as version.versionNumber for version in framework.versions"></select>
+                            </span>
+                            <br /><br />
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h3 class="panel-title">Extensions Categories</h3>
+                                        </div>
+                                        <div class="panel-body">
+                                            <select ng-model="framework.selectedCategories" ng-options="category.categoryName for category in framework.categories | orderBy:'_id'" multiple="multiple" class="form-control select-extensions">
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <h3 class="panel-title">Extensions</h3>
-                                    </div>
-                                    <div class="panel-body select-extensions-container">
-                                        <span ng-repeat="extension in framework.extensions | filter: filterExtensions(framework.selectedCategories)">
-                                            <label>
-                                                <input type="checkbox" checklist-model="framework.selectedExtensions" checklist-value="extension" />&nbsp;{{extension.extensionName}}
-                                                <select ng-show="(framework.selectedExtensions | filter: extension._id).length > 0" ng-model="extension.selectedVersion" ng-options="version._id as version.versionNumber for version in extension.versions">
-                                                    <option value="">Select Version</option>
-                                                </select>
-                                            </label>
-                                            <br />
-                                        </span>
-                                    </div>
+                                <div class="col-md-7">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <h3 class="panel-title">Extensions</h3>
+                                            {{frameworkId.extensions}}
+                                        </div>
+                                        <div class="panel-body select-extensions-container">
+                                            <span ng-repeat="extension in framework.extensions | filter: filterExtensions(framework.selectedCategories)">
+                                                <label>
+                                                    <input type="checkbox"
+                                                           checklist-model="frameworkId.extensions"
+                                                           checklist-value="{extension: extension._id}"
+                                                            />&nbsp;{{extension.extensionName}}
+                                                    <select ng-show="(frameworkId.extensions | filter: extension._id).length > 0" ng-model="(frameworkId.extensions | filter:{extension: extension._id})[0].version"
+                                                            ng-options="version._id as version.versionNumber for version in extension.versions">
+                                                        <option value="">Select Version</option>
+                                                    </select>
+                                                </label>
+                                                <br />
+                                            </span>
+                                        </div>
 
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </accordion-group>
-                </accordion>
+                        </accordion-group>
+                    </accordion>
+                </form>
             </accordion-group>
         </accordion>
     </div>

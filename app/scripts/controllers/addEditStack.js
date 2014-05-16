@@ -5,101 +5,59 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
         $scope.pageTitle = $state.current.title;
         $scope.buttonText = $state.current.doActionText;
 
-        // Prepare the language and frameworks array to work with multiselect directive
-        $scope.languages = angular.copy(languages);
 
-        function prepareForMultiSelect(obj) {
-            obj.ticked = false;
+		$scope.addEditStackObj = {
+			title: '',
+			githubUrl: '',
+			languages: []
+		};
 
-            if (obj.hasOwnProperty('icon')) {
-                obj.icon = '<img class="data-image img-rounded" src="' + obj.icon + '" />';
-            }
-        }
+		$scope.isEdit = false;
+        $scope.languages = languages;
+		$scope.selectedLanguages = [];
+		$scope.multiselectDropdownLanguagesOptions = {displayProp: 'langName', idProp: '_id', externalIdProp: 'lang'};
+		$scope.multiselectDropdownFrameworkOptions = {displayProp: 'frameworkName', idProp: '_id', externalIdProp: 'framework'};
 
-        angular.forEach($scope.languages, function(lang) {
-            prepareForMultiSelect(lang);
+		if (angular.isDefined(stackInfo))
+		{
+			$scope.isEdit = true;
+			$scope.addEditStackObj.title = stackInfo.title;
+			$scope.addEditStackObj.githubUrl = stackInfo.githubUrl;
+			$scope.selectedLanguages = angular.copy(stackInfo.languages);
+			console.log($scope.selectedLanguages );
+		}
 
-            angular.forEach(lang.frameworks, function(fw) {
-                prepareForMultiSelect(fw);
+		$scope.getSingleObjectFromArrayById = function(arr, obj, idProp)
+		{
+			var findObj = {};
+			findObj['_id'] = obj[idProp];
 
-                angular.forEach(fw.versions, function(ver) {
-                    prepareForMultiSelect(ver);
-                });
-            });
-        });
+			return $filter('filter')(arr, findObj)[0];
+		};
 
-        // Empty object of the created object
-        $scope.addStackObj = {
-            title: '',
-            githubUrl: '',
-            languages: []
-        };
 
-        $scope.isEdit = false;
+        $scope.$watch('selectedLanguages', function(newValue, oldValue) {
+			angular.forEach(_.difference(newValue, oldValue), function(selectedLang)
+			{
+				var langObject = _.find($scope.languages, {_id: selectedLang.lang});
 
-        if ($state.current.name === 'authorized.editStack') {
-            $scope.isEdit = true;
-            $scope.addStackObj.title = stackInfo.title;
-            $scope.addStackObj.githubUrl = stackInfo.githubUrl;
+				 angular.forEach(selectedLang.frameworks, function(selectedFw) {
+					 var fwObject = _.find(langObject.frameworks, {_id: selectedFw.framework});
 
-            // Initalize the display object to the data from the server
-            angular.forEach(stackInfo.languages, function(lang) {
-                var foundLang = $filter('filter')($scope.languages, {
-                    _id: lang.lang
-                })[0];
+					 if (!fwObject.hasOwnProperty('extensions'))
+					 {
+						 DataService.getExtensionsByFrameworkAndLanguage(selectedFw.framework, selectedLang.lang).then(function(response) {
+							 fwObject.extensions = response.extensions;
+							 fwObject.categories = response.categories;
+							 fwObject.categories.push({
+								 categoryName: 'All Categories',
+								 _id: ''
+							 });
+						 });
+					 }
 
-                foundLang.ticked = true;
-
-                angular.forEach(lang.frameworks, function(fw) {
-                    var foundFw = $filter('filter')(foundLang.frameworks, {
-                        _id: fw.framework
-                    })[0];
-                    foundFw.ticked = true;
-
-                    $filter('filter')(foundFw.versions, {
-                        _id: fw.frameworkVersion
-                    })[0].ticked = true;
-
-                    foundFw.selectedExtensions = [];
-
-                    DataService.getExtensionsByFrameworkAndLanguage(foundFw._id, foundLang._id).then(function(response) {
-                        foundFw.extensions = response.extensions;
-
-                        angular.forEach(fw.extensions, function(ext) {
-                            var foundExt = $filter('filter')(foundFw.extensions, {
-                                _id: ext.extension
-                            })[0];
-
-                            if (ext.hasOwnProperty('version')) {
-                                foundExt.selectedVersion = ext.version;
-                            }
-
-                            foundFw.selectedExtensions.push(foundExt);
-                        });
-                    });
-                });
-            });
-        }
-
-        $scope.$watch('languages', function(newValue) {
-            angular.forEach(newValue, function(language) {
-                language.selectedFrameworks = $filter('filter')(language.frameworks, {
-                    ticked: true
-                });
-
-                angular.forEach(language.selectedFrameworks, function(fw) {
-                    if (!fw.hasOwnProperty('extensions') && !fw.hasOwnProperty('categories')) {
-                        DataService.getExtensionsByFrameworkAndLanguage(fw._id, language._id).then(function(response) {
-                            fw.extensions = response.extensions;
-                            fw.categories = response.categories;
-                            fw.categories.push({
-                                categoryName: 'All Categories',
-                                _id: ''
-                            });
-                        });
-                    }
-                });
-            });
+				 });
+			});
         }, true);
 
         $scope.filterExtensions = function(selectedCategories) {
@@ -143,49 +101,18 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
             }
         });
 
-        // Add new stack action
+        // add/edit action
         $scope.addStack = function() {
-            var selectedLangs = $filter('filter')($scope.languages, {
-                ticked: true
-            });
+			$scope.addEditStackObj.languages = angular.copy($scope.selectedLanguages);
 
-            angular.forEach(selectedLangs, function(lang) {
-                var langObject = {};
-                langObject.lang = lang._id;
-                langObject.frameworks = [];
-
-                angular.forEach(lang.selectedFrameworks, function(fw) {
-                    var fwObject = {
-                        framework: fw._id,
-                        frameworkVersion: '',
-                        extensions: []
-                    };
-
-                    fwObject.frameworkVersion = $filter('filter')(fw.versions, {
-                        ticked: true
-                    })[0]._id;
-
-                    angular.forEach(fw.selectedExtensions, function(ext) {
-                        var extObject = {
-                            extension: ext._id,
-                            version: ext.selectedVersion
-                        };
-
-                        fwObject.extensions.push(extObject);
-                    });
-
-                    langObject.frameworks.push(fwObject);
-                });
-
-                $scope.addStackObj.languages.push(langObject);
-            });
+			console.log($scope.addEditStackObj);
 
             if ($scope.isEdit) {
-                StacksService.edit(stackInfo._id, $scope.addStackObj).then(function() {
+                StacksService.edit(stackInfo._id, $scope.addEditStackObj).then(function() {
                     AlertsHandlerService.addSuccess('Stack Successfully edited!');
                 });
             } else {
-                StacksService.add($scope.addStackObj).then(function() {
+                StacksService.add($scope.addEditStackObj).then(function() {
                     AlertsHandlerService.addSuccess('Stack Successfully added!');
                 });
             }

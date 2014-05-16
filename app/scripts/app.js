@@ -19,7 +19,7 @@ var showMyStackApp = angular
             $urlRouterProvider.otherwise('/');
 
             $stateProvider
-                .state('main', {
+                .state('authorized.main', {
                     url: '/',
                     controller: 'MainController',
                     templateUrl: 'views/main.html',
@@ -71,9 +71,8 @@ var showMyStackApp = angular
                             }
                         ],
                         stackInfo: [
-
                             function() {
-                                return {};
+                                return undefined;
                             }
                         ]
                     }
@@ -212,6 +211,8 @@ var showMyStackApp = angular
     ])
     .run(['Restangular', 'AlertsHandlerService', 'User', '$rootScope', '$state',
         function(Restangular, AlertsHandlerService, User, $rootScope, $state) {
+			$rootScope.$state = $state;
+
             // Set interceptor for errors from the server
             Restangular.setErrorInterceptor(
                 function(resp) {
@@ -239,7 +240,7 @@ var showMyStackApp = angular
                 Authorization: 'Bearer ' + User.getAuthToken()
             });
 
-			$rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams, error)
+			$rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error)
 			{
 				console.log(error);
 			});
