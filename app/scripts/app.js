@@ -96,6 +96,23 @@ var showMyStackApp = angular
                         ]
                     }
                 })
+				.state('authorized.viewStack', {
+                    url: '/stack/:stackId',
+                    controller: 'ViewStackController',
+                    templateUrl: 'views/view_stack.html',
+                    resolve: {
+						categories: ['DataService',
+							function(DataService) {
+								return DataService.getAllCategories();
+							}
+						],
+                        stackInfo: ['StacksService', '$stateParams',
+                            function(StacksService, $stateParams) {
+                                return StacksService.getByIdFull($stateParams.stackId);
+                            }
+                        ]
+                    }
+                })
                 .state('authorized.profile', {
                     url: '/profile',
                     controller: 'ProfileController',

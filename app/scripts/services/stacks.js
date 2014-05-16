@@ -19,5 +19,9 @@ showMyStackApp.service('StacksService', ['Restangular',
         this.getById = function(stackId) {
             return stackState.one('getById', stackId).get();
         };
+
+		this.getByIdFull = function(stackId) {
+			return stackState.one('getStack', stackId).get();
+		};
     }
 ]);

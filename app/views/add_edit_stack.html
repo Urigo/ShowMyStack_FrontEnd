@@ -60,7 +60,6 @@
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h3 class="panel-title">Extensions</h3>
-                                            {{frameworkId.extensions}}
                                         </div>
                                         <div class="panel-body select-extensions-container">
                                             <span ng-repeat="extension in framework.extensions | filter: filterExtensions(framework.selectedCategories)">
@@ -89,5 +88,5 @@
             </accordion-group>
         </accordion>
     </div>
-    <button type="submit" class="btn btn-primary " ng-click="addStack()">{{buttonText}}</button>
+    <button type="submit" class="btn btn-primary " ng-click="addEditStack()">{{buttonText}}</button>
 </form>

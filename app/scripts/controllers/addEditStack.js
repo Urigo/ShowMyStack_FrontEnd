@@ -105,18 +105,16 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
         });
 
         // add/edit action
-        $scope.addStack = function() {
+        $scope.addEditStack = function() {
 			$scope.addEditStackObj.languages = angular.copy($scope.selectedLanguages);
-
-			console.log($scope.addEditStackObj);
 
             if ($scope.isEdit) {
                 StacksService.edit(stackInfo._id, $scope.addEditStackObj).then(function() {
-                    AlertsHandlerService.addSuccess('Stack Successfully edited!');
+                    $state.go('authorized.viewStack', {stackId: stackInfo._id});
                 });
             } else {
-                StacksService.add($scope.addEditStackObj).then(function() {
-                    AlertsHandlerService.addSuccess('Stack Successfully added!');
+                StacksService.add($scope.addEditStackObj).then(function(response) {
+					$state.go('authorized.viewStack', {stackId: response._id})
                 });
             }
         };
