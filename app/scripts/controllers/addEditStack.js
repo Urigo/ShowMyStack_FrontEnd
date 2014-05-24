@@ -1,7 +1,7 @@
 'use strict';
 
-showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 'GithubService', 'AlertsHandlerService', 'languages', '$filter', 'DataService', '$state', 'stackInfo',
-    function($scope, StacksService, GithubService, AlertsHandlerService, languages, $filter, DataService, $state, stackInfo) {
+showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 'GithubService', 'AlertsHandlerService', 'languages', '$filter', 'DataService', '$state', 'stackInfo', '$modal',
+    function($scope, StacksService, GithubService, AlertsHandlerService, languages, $filter, DataService, $state, stackInfo, $modal) {
         $scope.pageTitle = $state.current.title;
         $scope.buttonText = $state.current.doActionText;
 
@@ -96,13 +96,34 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
                 if (regexVerify !== null) {
                     GithubService.getRepoInfo({
                         user: regexVerify[5].replace('/', ''),
-                        repo: regexVerify[7].replace('/', ''),
+                        repo: regexVerify[7].replace('/', '')
                     }, function(response) {
                         $scope.gitHubInfo = response.data;
+
+
                     });
                 }
             }
         });
+
+		$scope.addMissingFramework = function(language)
+		{
+			var modalInstance = $modal.open({
+				templateUrl: 'views/addMissingFramework.html',
+				controller: 'AddMissingFrameworkController',
+				resolve: {
+					languageId: function() {
+						return language._id;
+					}
+				}});
+
+			modalInstance.result.then(function () {
+				DataService.getAllLanguages().then(function(response)
+				{
+					language.frameworks = $filter('filter')(response, {_id: language._id})[0].frameworks;
+				});
+			});
+		};
 
         // add/edit action
         $scope.addEditStack = function() {
@@ -114,7 +135,7 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
                 });
             } else {
                 StacksService.add($scope.addEditStackObj).then(function(response) {
-					$state.go('authorized.viewStack', {stackId: response._id})
+					$state.go('authorized.viewStack', {stackId: response._id});
                 });
             }
         };

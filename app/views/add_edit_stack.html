@@ -17,20 +17,22 @@
     </div>
     <div class="form-group">
         <label for="langs">Languages</label>
-        <div dropdown-multiselect id="langs" selected-model="selectedLanguages" options="languages" extra-settings="multiselectDropdownLanguagesOptions"></div>
+        <div ng-dropdown-multiselect id="langs" selected-model="selectedLanguages" options="languages" extra-settings="multiselectDropdownLanguagesOptions"></div>
         <br /><br />
     </div>
     <div class="form-group" ng-show="selectedLanguages.length > 0">
-        <label for="thirdParties">Frameworks</label>
+        <label>Frameworks</label>
         <accordion close-others="false">
-            <accordion-group ng-repeat="langId in selectedLanguages" ng-init="language = getSingleObjectFromArrayById(languages, langId, 'lang'); langId.frameworks || (langId.frameworks = [])">
+            <accordion-group ng-repeat="langId in selectedLanguages" ng-init="language = getSingleObjectFromArrayById(languages, langId, 'lang'); langId.frameworks.length > 0 || (langId.frameworks = [])">
                 <form>
                     <accordion-heading>
                         {{language.langName}} Frameworks
                     </accordion-heading>
                     Select the {{language.langName}} frameworks you work with:
-                    <div dropdown-multiselect selected-model="langId.frameworks" options="language.frameworks"
+                    <div ng-dropdown-multiselect selected-model="langId.frameworks" options="language.frameworks"
                          extra-settings="multiselectDropdownFrameworkOptions"></div>
+                    <br /><br />
+                    <a class="btn btn-link" ng-click="addMissingFramework(language);">Missing framework? click here</a>
                     <br />
                     <br />
                     <accordion close-others="false">

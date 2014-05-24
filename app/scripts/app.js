@@ -11,7 +11,9 @@ var showMyStackApp = angular
         'restangular',
         'ngStorage',
         'multi-select',
-        'checklist-model'
+        'checklist-model',
+		'angularjs-dropdown-multiselect',
+		'angularjs-github-url-input'
     ])
     .config(['$stateProvider', '$urlRouterProvider',
         function($stateProvider, $urlRouterProvider) {

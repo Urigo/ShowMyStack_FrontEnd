@@ -16,7 +16,9 @@
     "restangular": "~1.4.0",
     "ngstorage": "~0.3.0",
     "checklist-model": "https://github.com/dotansimha/checklist-model.git#0.1.4",
-    "isteven-angular-multiselect": "~1.0.0"
+    "isteven-angular-multiselect": "~1.0.0",
+    "angularjs-dropdown-multiselect": "~1.1.0",
+    "angularjs-github-url-input": "*"
   },
   "devDependencies": {
     "angular-mocks": "1.2.15",
