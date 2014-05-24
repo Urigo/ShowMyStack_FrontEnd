@@ -51,6 +51,7 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 					 {
 						 DataService.getExtensionsByFrameworkAndLanguage(selectedFw.framework, selectedLang.lang).then(function(response) {
 							 fwObject.extensions = response.extensions;
+							 fwObject.cleanCategories = response.categories;
 							 fwObject.categories = response.categories;
 							 fwObject.categories.push({
 								 categoryName: 'All Categories',
@@ -122,6 +123,29 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 				{
 					language.frameworks = $filter('filter')(response, {_id: language._id})[0].frameworks;
 				});
+			});
+		};
+
+		$scope.addMissingExtension = function(framework, language)
+		{
+			var modalInstance = $modal.open({
+				templateUrl: 'views/addMissingExtension.html',
+				controller: 'AddMissingExtensionController',
+				resolve: {
+					frameworkId: function() {
+						return framework._id;
+					},
+					languageId: function() {
+						return language._id;
+					},
+					categories: function()
+					{
+						return framework.cleanCategories;
+					}
+				}});
+
+			modalInstance.result.then(function (createdObj) {
+				framework.extensions.push(createdObj);
 			});
 		};
 
