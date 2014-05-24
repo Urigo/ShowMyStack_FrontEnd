@@ -26,7 +26,11 @@ showMyStackApp.service('User', ['$localStorage', 'Restangular',
         };
 
         this.setUserFromResponse = function(userDetails) {
-            this.$storage.userDetails = {};
+			if (angular.isUndefined(this.$storage.userDetails))
+			{
+				this.$storage.userDetails = {};
+			}
+
             this.$storage.userDetails.user = userDetails.user;
             this.$storage.userDetails.authToken = userDetails.access_token;
             this.$storage.userDetails.isLoggedIn = true;

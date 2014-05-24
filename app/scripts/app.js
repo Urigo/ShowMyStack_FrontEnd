@@ -239,7 +239,7 @@ var showMyStackApp = angular
 					{
 						$state.go('error');
 					}
-					else if (resp.status === 401)
+					else if (resp.status === 401 && resp.config.url.indexOf('auth/login') === -1)
 					{
 						$state.go('unauthorized.login');
 					}
@@ -255,9 +255,13 @@ var showMyStackApp = angular
                     return false;
                 });
 
-            Restangular.setDefaultHeaders({
-                Authorization: 'Bearer ' + User.getAuthToken()
-            });
+            Restangular.addFullRequestInterceptor(function(element, operation, what, url, headers)
+			{
+				if (User.isAuthenticated())
+				{
+					headers.Authorization = 'Bearer ' + User.getAuthToken();
+				}
+			});
 
 			$rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error)
 			{
