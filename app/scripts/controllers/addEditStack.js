@@ -22,6 +22,11 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 			lastClickedChanged: function(newItem)
 			{
 				$scope.onWorkLanguage = newItem;
+
+				if (angular.isDefined($scope.onWorkCategory))
+				{
+					$scope.loadTools();
+				}
 			}
 		};
 
