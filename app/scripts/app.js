@@ -76,7 +76,11 @@ var showMyStackApp = angular
                             function() {
                                 return undefined;
                             }
-                        ]
+                        ],
+						categories: ['DataService', function(DataService)
+						{
+							return DataService.getAllCategories();
+						}]
                     }
                 })
                 .state('authorized.editStack', {
@@ -142,11 +146,6 @@ var showMyStackApp = angular
                             function(DataService) {
                                 return DataService.getAllCategories();
                             }
-                        ],
-                        frameworks: ['DataService',
-                            function(DataService) {
-                                return DataService.getAllFrameworks();
-                            }
                         ]
                     }
                 })
@@ -197,12 +196,6 @@ var showMyStackApp = angular
                 return language;
             });
 
-            RestangularProvider.addElementTransformer('framework', true, function(framework) {
-                framework.addRestangularMethod('add', 'post', 'add');
-                framework.addRestangularMethod('getAll', 'get', 'all');
-
-                return framework;
-            });
 
             RestangularProvider.addElementTransformer('category', true, function(category) {
                 category.addRestangularMethod('add', 'post', 'add');
@@ -211,7 +204,7 @@ var showMyStackApp = angular
                 return category;
             });
 
-            RestangularProvider.addElementTransformer('extension', true, function(extension) {
+            RestangularProvider.addElementTransformer('tool', true, function(extension) {
                 extension.addRestangularMethod('add', 'post', 'add');
                 extension.addRestangularMethod('getAll', 'get', 'all');
 

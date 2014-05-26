@@ -1,9 +1,16 @@
 'use strict';
 
-showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 'GithubService', 'AlertsHandlerService', 'languages', '$filter', 'DataService', '$state', 'stackInfo', '$modal',
-    function($scope, StacksService, GithubService, AlertsHandlerService, languages, $filter, DataService, $state, stackInfo, $modal) {
+showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 'GithubService', 'AlertsHandlerService', 'languages', '$filter', 'DataService', '$state', 'stackInfo', '$modal', 'categories',
+    function($scope, StacksService, GithubService, AlertsHandlerService, languages, $filter, DataService, $state, stackInfo, $modal, categories) {
         $scope.pageTitle = $state.current.title;
         $scope.buttonText = $state.current.doActionText;
+		$scope.categories = categories;
+		$scope.isEdit = false;
+        $scope.languages = languages;
+		$scope.selectedLanguages = {};
+		$scope.selectedTools = {};
+		$scope.tools = [];
+		$scope.searchLangs = '';
 
 		$scope.addEditStackObj = {
 			title: '',
@@ -11,11 +18,29 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 			languages: []
 		};
 
-		$scope.isEdit = false;
-        $scope.languages = languages;
-		$scope.selectedLanguages = [];
-		$scope.multiselectDropdownLanguagesOptions = {displayProp: 'langName', idProp: '_id', externalIdProp: 'lang'};
-		$scope.multiselectDropdownFrameworkOptions = {displayProp: 'frameworkName', idProp: '_id', externalIdProp: 'framework'};
+		$scope.languageListEvents = {
+			lastClickedChanged: function(newItem)
+			{
+				$scope.onWorkLanguage = newItem;
+			}
+		};
+
+		$scope.categoryListEvents = {
+			lastClickedChanged: function(newItem)
+			{
+				$scope.onWorkCategory = newItem;
+				$scope.loadTools();
+			}
+		};
+
+		$scope.loadTools = function()
+		{
+			DataService.getToolsByLanguageAndCategory($scope.onWorkLanguage._id, $scope.onWorkCategory._id).then(function(response)
+			{
+				$scope.tools = response;
+			});
+		};
+
 
 		if (angular.isDefined(stackInfo))
 		{
@@ -23,22 +48,14 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 			$scope.addEditStackObj.title = stackInfo.title;
 			$scope.addEditStackObj.githubUrl = stackInfo.githubUrl;
 			$scope.selectedLanguages = angular.copy(stackInfo.languages);
-			console.log($scope.selectedLanguages);
 		}
 
-		$scope.getSingleObjectFromArrayById = function(arr, obj, idProp)
+		$scope.filterCategories = function(category)
 		{
-			var findObj = {};
-			findObj._id = obj[idProp];
-
-			return $filter('filter')(arr, findObj)[0];
+			return $filter('filter')(category.languages, $scope.onWorkLanguage._id).length > 0;
 		};
 
-		$scope.compareExtensionObject = function(ext1, ext2)
-		{
-			return ext1.extension === ext2.extension;
-		};
-
+		/*
         $scope.$watch('selectedLanguages', function(newValue) {
 			angular.forEach(newValue, function(selectedLang)
 			{
@@ -63,6 +80,7 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 				 });
 			});
         }, true);
+
 
         $scope.filterExtensions = function(selectedCategories) {
             return function(extension) {
@@ -100,52 +118,41 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
                         repo: regexVerify[7].replace('/', '')
                     }, function(response) {
                         $scope.gitHubInfo = response.data;
-
-
                     });
                 }
             }
         });
+        */
 
-		$scope.addMissingFramework = function(language)
+		$scope.addMissingCategory = function(language)
 		{
 			var modalInstance = $modal.open({
-				templateUrl: 'views/addMissingFramework.html',
-				controller: 'AddMissingFrameworkController',
-				resolve: {
-					languageId: function() {
-						return language._id;
-					}
-				}});
+				templateUrl: 'views/addMissingCategory.html',
+				controller: 'AddMissingCategoryController'});
 
-			modalInstance.result.then(function () {
-				DataService.getAllLanguages().then(function(response)
-				{
-					language.frameworks = $filter('filter')(response, {_id: language._id})[0].frameworks;
-				});
+			modalInstance.result.then(function (createdObj) {
+
 			});
 		};
 
-		$scope.addMissingExtension = function(framework, language)
+		$scope.AddMissingTool = function()
 		{
 			var modalInstance = $modal.open({
-				templateUrl: 'views/addMissingExtension.html',
-				controller: 'AddMissingExtensionController',
+				templateUrl: 'views/addMissingTool.html',
+				controller: 'AddMissingToolController',
 				resolve: {
-					frameworkId: function() {
-						return framework._id;
-					},
 					languageId: function() {
-						return language._id;
+						return $scope.onWorkLanguage._id;
 					},
 					categories: function()
 					{
-						return framework.cleanCategories;
+						var relevantCategories = $filter('filter')($scope.categories, $scope.filterCategories);
+						return relevantCategories;
 					}
 				}});
 
 			modalInstance.result.then(function (createdObj) {
-				framework.extensions.push(createdObj);
+
 			});
 		};
 

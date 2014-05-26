@@ -3,44 +3,35 @@
 showMyStackApp.service('DataService', ['Restangular',
     function(Restangular) {
         var languagesState = Restangular.all('language');
-        var frameworkState = Restangular.all('framework');
         var categoryState = Restangular.all('category');
-        var extensionState = Restangular.all('extension');
+        var toolState = Restangular.all('tool');
 
         this.addLanguage = function(langObj) {
             return languagesState.add(langObj);
-        };
-
-        this.addFramework = function(frameworkObj) {
-            return frameworkState.add(frameworkObj);
         };
 
         this.addCategory = function(catObj) {
             return categoryState.add(catObj);
         };
 
-        this.addExtension = function(extObj) {
-            return extensionState.add(extObj);
+        this.addTool = function(toolObj) {
+            return toolState.add(toolObj);
         };
 
         this.getAllLanguages = function() {
             return languagesState.getAll();
         };
 
-        this.getAllExtensions = function() {
-            return extensionState.getAll();
+        this.getAllTools = function() {
+            return toolState.getAll();
         };
+
+		this.getToolsByLanguageAndCategory = function(langId, catId) {
+			return toolState.one('language', langId).one('category', catId).get();
+		};
 
         this.getAllCategories = function() {
             return categoryState.getAll();
-        };
-
-        this.getAllFrameworks = function() {
-            return frameworkState.getAll();
-        };
-
-        this.getExtensionsByFrameworkAndLanguage = function(frameworkId, langId) {
-            return extensionState.one('getByFramework', frameworkId).one('andLanguage', langId).get();
         };
     }
 ]);

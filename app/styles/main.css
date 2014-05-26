@@ -25,12 +25,7 @@
     color: #777;
     border-top: 1px solid #e5e5e5;
 }
-/* Customize container */
- @media (min-width: 768px) {
-    .container {
-        max-width: 730px;
-    }
-}
+
 .container-narrow > hr {
     margin: 30px 0;
 }
@@ -85,4 +80,30 @@
 .dropdown-multiselect
 {
     position: absolute;
+}
+
+/* CSS REQUIRED */
+.state-icon {
+    left: -5px;
+}
+
+.list-group-item-primary {
+    color: rgb(255, 255, 255);
+    background-color: rgb(66, 139, 202);
+}
+
+/* DEMO ONLY - REMOVES UNWANTED MARGIN */
+.well .list-group {
+    margin-bottom: 0px;
+}
+
+.right-seperator
+{
+    border-right: 1px solid #333;
+}
+
+.items-list
+{
+    max-height: 550px;
+    overflow-y: scroll;
 }

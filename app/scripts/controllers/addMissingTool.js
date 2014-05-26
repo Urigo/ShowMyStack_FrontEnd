@@ -1,10 +1,10 @@
 'use strict';
 
-showMyStackApp.controller('AddMissingExtensionController', ['$scope', '$modalInstance', 'GithubService', 'DataService', 'languageId', 'frameworkId', 'categories',
-	function($scope, $modalInstance, GithubService, DataService, languageId, frameworkId, categories)
+showMyStackApp.controller('AddMissingToolController', ['$scope', '$modalInstance', 'GithubService', 'DataService', 'languageId', 'categories',
+	function($scope, $modalInstance, GithubService, DataService, languageId, categories)
 	{
 		$scope.categories = categories;
-		$scope.addExtensionObj = {};
+		$scope.addToolObj = {};
 		$scope.selectedCategories = [];
 		$scope.multiselectDropdownCatsOptions = {displayProp: 'categoryName', idProp: '_id', externalIdProp: 'id'};
 		$scope.ghModel = {};
@@ -17,7 +17,7 @@ showMyStackApp.controller('AddMissingExtensionController', ['$scope', '$modalIns
 					user: newValue.username,
 					repo: newValue.repo
 				}, function(response) {
-					$scope.addExtensionObj.extensionName = response.data.name || '';
+					$scope.addToolObj.toolName = response.data.name || '';
 				});
 
 				GithubService.getRepoInfo({
@@ -25,15 +25,15 @@ showMyStackApp.controller('AddMissingExtensionController', ['$scope', '$modalIns
 					repo: newValue.repo,
 					spec: 'tags'
 				}, function(response) {
-					$scope.addExtensionObj.versions = _.pluck(response.data || [], 'name');
+					$scope.addToolObj.versions = _.pluck(response.data || [], 'name');
 				});
 			}
 		}, true);
 
-		$scope.addExtension = function()
+		$scope.addTool = function()
 		{
-			var tempObj = angular.copy($scope.addExtensionObj);
-			tempObj.frameworks = [frameworkId];
+			var tempObj = angular.copy($scope.addToolObj);
+			tempObj.language = languageId;
 			tempObj.categories = _.pluck($scope.selectedCategories, 'id');
 
 			var versArray = [];
@@ -47,7 +47,7 @@ showMyStackApp.controller('AddMissingExtensionController', ['$scope', '$modalIns
 
 			tempObj.versions = versArray;
 
-			DataService.addExtension(tempObj).then(function(response) {
+			DataService.addTool(tempObj).then(function(response) {
 				$modalInstance.close(response);
 			});
 		};
