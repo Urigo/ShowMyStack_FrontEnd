@@ -54,16 +54,13 @@ showMyStackApp.directive('smartList', ['$filter', function($filter) {
 				{
 					var response = this.events.lastClickedChanged(item, this);
 
-					if (angular.isUndefined(response) || response)
+					if (angular.isDefined(this.lastClickedItem))
 					{
-						if (angular.isDefined(this.lastClickedItem))
-						{
-							this.lastClickedItem.lastClicked = false;
-						}
-
-						item.lastClicked = true;
-						this.lastClickedItem = item;
+						this.lastClickedItem.lastClicked = false;
 					}
+
+					item.lastClicked = true;
+					this.lastClickedItem = item;
 
 					return response;
 				}

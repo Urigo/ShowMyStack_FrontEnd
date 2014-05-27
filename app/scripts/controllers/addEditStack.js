@@ -48,7 +48,7 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 		$scope.toolsListEvents = {
 			lastClickedChanged: function(item)
 			{
-				return !item.lastClicked && !item.isSelected;
+				return !item.lastClicked;
 			},
 			itemAddedToSelection: function(item)
 			{
