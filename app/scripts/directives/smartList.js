@@ -16,7 +16,7 @@ showMyStackApp.directive('smartList', ['$filter', function($filter) {
 		replace: true,
 		transclude: true,
 		template: '<ul ng-click="handleClickEvent($event)" class="list-group checked-list-box" ng-transclude=""></ul>',
-		controller: function ($scope) {
+		controller: ['$scope', function ($scope) {
 			this.items = $scope.selectedModel || {};
 			this.registeredItems = {};
 			this.singleSelectionMode = false;
@@ -104,7 +104,7 @@ showMyStackApp.directive('smartList', ['$filter', function($filter) {
 			};
 
 			this.events.initDone(this);
-		}
+		}]
 	};
 }]);
 

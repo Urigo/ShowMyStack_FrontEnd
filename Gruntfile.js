@@ -200,13 +200,20 @@ module.exports = function(grunt) {
         },
 
         // Performs rewrites based on rev and the useminPrepare configuration
-        usemin: {
-            html: ['<%= yeoman.dist %>/{,*/}*.html'],
-            css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
-            options: {
-                assetsDirs: ['<%= yeoman.dist %>']
-            }
-        },
+		usemin: {
+			html: ['<%= yeoman.dist %>/{,*/}*.html'],
+			css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
+			options: {
+				assetsDirs: ['<%= yeoman.dist %>'],
+				patterns: {
+					css: [
+						[/(\/bower_components\/bootstrap\/dist\/fonts)/g, 'god help me', function(match) {
+							return match.replace('/bower_components/bootstrap/dist/fonts', '../fonts');
+						}]
+					]
+				}
+			}
+		},
 
         // The following *-min tasks produce minified files in the dist folder
         cssmin: {
@@ -296,7 +303,12 @@ module.exports = function(grunt) {
                     cwd: '.tmp/images',
                     dest: '<%= yeoman.dist %>/images',
                     src: ['generated/*']
-                }]
+                },{
+				expand: true,
+				cwd: '<%= yeoman.app %>/bower_components/bootstrap/fonts',
+				dest: '<%= yeoman.dist %>/fonts',
+				src: '*.*'
+				}]
             },
             styles: {
                 expand: true,
