@@ -107,3 +107,8 @@
     max-height: 550px;
     overflow-y: scroll;
 }
+
+.smart-list-item-body
+{
+    background-color: #cecece;
+}

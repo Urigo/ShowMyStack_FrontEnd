@@ -10,19 +10,12 @@ Project
             <img class="data-image img-rounded" ng-src="{{lang.lang.icon}}" />{{lang.lang.langName}}
         </accordion-heading>
         Project
-        <strong>{{stack.title}}</strong>&nbsp;uses {{lang.frameworks.length}} {{lang.lang.langName}} frameworks.
-        <accordion close-others="false">
-            <accordion-group ng-repeat="framework in lang.frameworks">
-                <accordion-heading>
-                    <img class="data-image img-rounded" ng-src="{{framework.framework.icon}}" />{{framework.framework.frameworkName}} (v{{(framework.framework.versions | filter: {_id: framework.frameworkVersion})[0].versionNumber}})
-                </accordion-heading>
-                <ul class="list-group" ng-repeat="extension in framework.extensions">
-                    <li class="list-group-item">
-                        {{extension.extension.extensionName}} ({{ (extension.extension.versions | filter: {_id: extension.version})[0].versionNumber }})
-                        <br>Uses for {{ $parent.getCategories(extension.extension.categories).join(', ') }}
-                    </li>
-                </ul>
-            </accordion-group>
-        </accordion>
+        <strong>{{stack.title}}</strong>&nbsp;uses {{lang.tools.length}} {{lang.lang.langName}} tools: <br />
+        <ul class="list-group" ng-repeat="tool in lang.tools">
+            <li class="list-group-item">
+                {{tool.tool.toolName}} ({{(tool.tool.versions | filter: {_id: tool.version})[0].versionNumber}})
+                <br>Uses for {{ $parent.getCategories(tool.tool.categories).join(', ') }}
+            </li>
+        </ul>
     </accordion-group>
 </accordion>

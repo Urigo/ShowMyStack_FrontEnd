@@ -12,6 +12,9 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 		$scope.tools = [];
 		$scope.searchLangs = '';
 
+
+		$scope.toolsListStyles = {classLastClickedItem: 'list-group-item-info active'};
+
 		$scope.addEditStackObj = {
 			title: '',
 			githubUrl: '',
@@ -21,20 +24,53 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 		$scope.languageListEvents = {
 			lastClickedChanged: function(newItem)
 			{
-				$scope.onWorkLanguage = newItem;
+				$scope.onWorkLanguage = newItem.obj;
 
 				if (angular.isDefined($scope.onWorkCategory))
 				{
 					$scope.loadTools();
 				}
+			},
+			initDone: function(listCtrl)
+			{
+				$scope.langsListObj = listCtrl;
 			}
 		};
 
 		$scope.categoryListEvents = {
 			lastClickedChanged: function(newItem)
 			{
-				$scope.onWorkCategory = newItem;
+				$scope.onWorkCategory = newItem.obj;
 				$scope.loadTools();
+			}
+		};
+
+		$scope.toolsListEvents = {
+			lastClickedChanged: function(item)
+			{
+				return !item.lastClicked && !item.isSelected;
+			},
+			itemAddedToSelection: function(item)
+			{
+				// Make sure that the language is selected!
+				if (angular.isUndefined($scope.selectedLanguages[$scope.onWorkLanguage._id]))
+				{
+					$scope.langsListObj.toggleSelectionItem($scope.langsListObj.getRegisteredItem($scope.onWorkLanguage._id));
+				}
+
+				if (angular.isUndefined($scope.selectedLanguages[$scope.onWorkLanguage._id].tools ))
+				{
+					$scope.selectedLanguages[$scope.onWorkLanguage._id].tools = {};
+				}
+
+				$scope.selectedLanguages[$scope.onWorkLanguage._id].tools[item.id] = {tool: item.id, version: null};
+			},
+			itemRemovedFromSelection: function(item)
+			{
+				if (angular.isDefined($scope.selectedLanguages[$scope.onWorkLanguage._id]))
+				{
+					delete $scope.selectedLanguages[$scope.onWorkLanguage._id].tools[item.id];
+				}
 			}
 		};
 
@@ -133,7 +169,14 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 		{
 			var modalInstance = $modal.open({
 				templateUrl: 'views/addMissingCategory.html',
-				controller: 'AddMissingCategoryController'});
+				controller: 'AddMissingCategoryController',
+				resolve: {
+					languages: function()
+					{
+						return $scope.languages;
+					}
+				}
+			});
 
 			modalInstance.result.then(function (createdObj) {
 
@@ -161,9 +204,29 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 			});
 		};
 
+		$scope.normalizeKeys = function(arr)
+		{
+			var newArr = [];
+
+			angular.forEach(arr, function(value)
+			{
+				newArr.push(value);
+			});
+
+			return newArr;
+		};
+
         // add/edit action
         $scope.addEditStack = function() {
-			$scope.addEditStackObj.languages = angular.copy($scope.selectedLanguages);
+			$scope.addEditStackObj.languages = $scope.normalizeKeys($scope.selectedLanguages);
+
+			angular.forEach($scope.addEditStackObj.languages, function(value)
+			{
+				if (angular.isDefined(value.tools))
+				{
+					value.tools = $scope.normalizeKeys(value.tools);
+				}
+			});
 
             if ($scope.isEdit) {
                 StacksService.edit(stackInfo._id, $scope.addEditStackObj).then(function() {
