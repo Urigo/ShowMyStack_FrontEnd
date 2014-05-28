@@ -11,8 +11,6 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 		$scope.selectedTools = {};
 		$scope.tools = [];
 		$scope.searchLangs = '';
-
-
 		$scope.toolsListStyles = {classLastClickedItem: 'list-group-item-info active'};
 
 		$scope.addEditStackObj = {
@@ -179,7 +177,7 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 			});
 
 			modalInstance.result.then(function (createdObj) {
-
+				$scope.categories.push(createdObj);
 			});
 		};
 
@@ -200,7 +198,7 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 				}});
 
 			modalInstance.result.then(function (createdObj) {
-
+				$scope.tools.push(createdObj);
 			});
 		};
 
@@ -208,8 +206,7 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 		{
 			var newArr = [];
 
-			angular.forEach(arr, function(value)
-			{
+			angular.forEach(arr, function(value) {
 				newArr.push(value);
 			});
 
