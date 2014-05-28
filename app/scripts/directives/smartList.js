@@ -92,6 +92,11 @@ showMyStackApp.directive('smartList', ['$filter', function($filter) {
 
 						this.lastSelected = smartListItem;
 						smartListItem.isSelected = true;
+
+						if (smartListItem.itemClickOnSelect)
+						{
+							this.setLastItemClicked(smartListItem);
+						}
 					}
 					else
 					{
@@ -134,7 +139,7 @@ showMyStackApp.directive('smartListItemBody', [function()
 		replace: true,
 		scope: false,
 		transclude: true,
-		template: '<div ng-show="$$prevSibling.currentItem.lastClicked" class="row smart-list-item-body"><div class="col-md-12" ng-transclude></div>',
+		template: '<div ng-show="(openBodyOnClick && $$prevSibling.currentItem.lastClicked) || (!openBodyOnClick && $$prevSibling.currentItem.isSelected)" class="row smart-list-item-body"><div class="col-md-12" ng-transclude></div>',
 		require: '^smartListItem',
 		link: function(scope, elem, attrs, smartListItemInstance) {
 
@@ -150,7 +155,9 @@ showMyStackApp.directive('smartListItem', [function() {
 			itemIdProp: '@',
 			itemCheckbox: '@',
 			nonClickable: '@',
-			itemSelectOnClick: '@'
+			itemSelectOnClick: '@',
+			itemClickOnSelect: '@',
+			openBody: '@'
 		},
 		replace: true,
 		transclude: true,
@@ -212,7 +219,9 @@ showMyStackApp.directive('smartListItem', [function() {
 				isCheckbox: angular.isDefined(scope.itemCheckbox) ? true : false,
 				lastClicked: false,
 				isSelected: false,
+				openBodyOnClick: angular.isDefined(scope.openBody) && scope.openBody === 'click',
 				itemSelectOnClick: angular.isDefined(scope.itemSelectOnClick) ? true : false,
+				itemClickOnSelect: angular.isDefined(scope.itemClickOnSelect) ? true : false,
 				obj: scope.itemValue,
 				id: scope.getItemId(scope.itemValue, scope.itemIdProp)};
 

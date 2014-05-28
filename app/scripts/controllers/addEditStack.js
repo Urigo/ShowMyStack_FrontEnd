@@ -11,7 +11,7 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 		$scope.selectedTools = {};
 		$scope.tools = [];
 		$scope.searchLangs = '';
-		$scope.toolsListStyles = {classLastClickedItem: 'list-group-item-info active'};
+		$scope.toolsListStyles = {};
 
 		$scope.addEditStackObj = {
 			title: '',
@@ -44,10 +44,6 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 		};
 
 		$scope.toolsListEvents = {
-			lastClickedChanged: function(item)
-			{
-				return !item.lastClicked;
-			},
 			itemAddedToSelection: function(item)
 			{
 				// Make sure that the language is selected!
@@ -56,7 +52,7 @@ showMyStackApp.controller('AddEditStackController', ['$scope', 'StacksService', 
 					$scope.langsListObj.toggleSelectionItem($scope.langsListObj.getRegisteredItem($scope.onWorkLanguage._id));
 				}
 
-				if (angular.isUndefined($scope.selectedLanguages[$scope.onWorkLanguage._id].tools ))
+				if (angular.isUndefined($scope.selectedLanguages[$scope.onWorkLanguage._id].tools))
 				{
 					$scope.selectedLanguages[$scope.onWorkLanguage._id].tools = {};
 				}
