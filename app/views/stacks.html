@@ -1,4 +1,37 @@
 <div alerts-panel clear-on-init="true"></div>
+<div class="row animate-if" ng-if="selectedStack">
+    <div class="col-md-12">
+        <div class="well">
+            <h3>{{ selectedStack.title }}</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    <dl>
+                        <dt ng-if="selectedStack.githubUrl">GitHub</dt>
+                        <dd ng-if="selectedStack.githubUrl"><a target="_blank" ng-href="{{ selectedStack.githubUrl }}">{{ selectedStack.githubUrl }}</a></dd>
+                        <dt>Languages</dt>
+                        <dd>{{ selectedStack.languages.length }}</dd>
+                        <dt>Total tools</dt>
+                        <dd>{{ getToolsCount(selectedStack.languages) }}</dd>
+                    </dl>
+                </div>
+                <div class="col-md-4">
+                    <dl>
+                        <dt ng-if="selectedStack.createdBy">Creation</dt>
+                        <dd ng-if="selectedStack.createdBy">{{selectedStack.createdAt | date: 'medium'}} by
+                            {{selectedStack.createdBy.email}}</dd>
+                    </dl>
+                    <dl>
+                        <dt ng-if="selectedStack.updatedBy">Last Update</dt>
+                        <dd ng-if="selectedStack.updatedBy">{{selectedStack.updatedAt | date: 'medium'}} by {{selectedStack.updatedBy
+                            .email}}</dd>
+                    </dl>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
 <div class="row">
     <div class="col-md-2">
         <div class="well items-list">
@@ -44,7 +77,7 @@
         </div>
     </div>
     <div class="col-md-2">
-        <div class="well items-list" ng-if="selectedCat">
+        <div class="well items-list" ng-if="selectedStack">
             <h4>Done editing {{selectedStack.name}}?</h4>
             <button class="btn btn-success" ng-click="saveStack()">Click Here To Save!</button>
         </div>

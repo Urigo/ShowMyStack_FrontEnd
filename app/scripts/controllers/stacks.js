@@ -29,12 +29,13 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 				$scope.selectedStack = clickedStack;
 				$scope.checkedLangsModel = $scope.selectedStack.languages;
 				$scope.selectedCat = undefined;
+				$scope.selectedLang = undefined;
 			}};
 
 		$scope.langsListEvents = {
 			itemClicked: function(clickedLang)
 			{
-				$scope.selectedCat = undefined;
+				//$scope.selectedCat = undefined;
 
 				$scope.selectedLang = clickedLang;
 
@@ -74,16 +75,12 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 			var toolsArr = [];
 
 			angular.forEach($scope.tools, function (tool) {
-				var relevantLangs = $filter('filter')(tool.language, function(value) {
-					return value === selectedLang._id;
-				});
-
 				var relevantCats = $filter('filter')(tool.categories, function(value)
 				{
 					return value === selectedCategory._id;
 				});
 
-				if (relevantLangs.length > 0 && relevantCats.length > 0) {
+				if (tool.language === $scope.selectedLang._id && relevantCats.length > 0) {
 					toolsArr.push(tool);
 				}
 			});
@@ -163,6 +160,18 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 			modalInstance.result.then(function (createdObj) {
 				$scope.stacks.push(createdObj);
 			});
+		};
+
+		$scope.getToolsCount = function(langs)
+		{
+			var total = 0;
+
+			angular.forEach(langs, function(value)
+			{
+				total += langs.length;
+			});
+
+			return total;
 		};
 
         $scope.saveStack = function() {
