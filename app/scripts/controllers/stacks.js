@@ -55,11 +55,6 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 			}
 		};
 
-		$scope.$watch('checkedToolsModel', function(newValue)
-		{
-			console.log(newValue);
-		});
-
 		$scope.rebuildFilteredCategories = function(selectedLang)
 		{
 			var catsArr = [];

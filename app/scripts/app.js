@@ -83,42 +83,6 @@ var showMyStackApp = angular
                             $state.go('unauthorized.login');
                         }
                     ]
-                })
-                .state('admin', {
-                    abstract: true,
-                    templateUrl: '../views/authorize_template.html',
-                    resolve: {
-                        languages: ['DataService',
-                            function(DataService) {
-                                return DataService.getAllLanguages();
-                            }
-                        ],
-                        categories: ['DataService',
-                            function(DataService) {
-                                return DataService.getAllCategories();
-                            }
-                        ]
-                    }
-                })
-                .state('admin.addLang', {
-                    url: '/admin/addLang',
-                    controller: 'AdminController',
-                    templateUrl: 'views/admin/add_lang.html'
-                })
-                .state('admin.addFramework', {
-                    url: '/admin/addFramework',
-                    controller: 'AdminController',
-                    templateUrl: 'views/admin/add_framework.html'
-                })
-                .state('admin.addCategory', {
-                    url: '/admin/addCategory',
-                    controller: 'AdminController',
-                    templateUrl: 'views/admin/add_category.html'
-                })
-                .state('admin.addExtension', {
-                    url: '/admin/addExtension',
-                    controller: 'AdminController',
-                    templateUrl: 'views/admin/add_extension.html'
                 });
         }
     ])
