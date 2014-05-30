@@ -18,14 +18,15 @@ showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', funct
 		{
 			var template = '';
 			template += '<ul class="list-group">';
-			template += '<li ng-init="currentOption = option; currentModel = getModelForObject(getPropertyForObject(option,settings.idProp))" class="list-group-item" ng-class="{\'list-group-item-info\': lastClickedId === getPropertyForObject(option,settings.idProp)}" data-ng-repeat="option in options">' +
+			template += '<li class="list-group-item" ng-class="{\'list-group-item-info\': lastClickedId === getPropertyForObject(option,settings.idProp)}" data-ng-repeat="option in options">' +
 				'<div class="row">' +
-				'<div class="col-md-3" ng-show="settings.checkables" ng-click="setSelectedItem(getPropertyForObject(option,settings.idProp))" data-ng-class="{\'glyphicon glyphicon-unchecked\': !isChecked(getPropertyForObject(option,settings.idProp)),  \'glyphicon glyphicon-check\': isChecked(getPropertyForObject(option,settings.idProp))}"></div>' +
-				'<div ng-class="{\'col-md-9\' : settings.checkables, \'col-md-12\': !settings.checkables}" ng-click="itemClick(getPropertyForObject(option,settings.idProp))">' +
+				'<div class="col-md-2" ng-show="settings.checkables" ng-click="setSelectedItem(getPropertyForObject(option,settings.idProp))" data-ng-class="{\'glyphicon glyphicon-unchecked\': !isChecked(getPropertyForObject(option,settings.idProp)),  \'glyphicon glyphicon-check\': isChecked(getPropertyForObject(option,settings.idProp))}"></div>' +
+				'<div ng-class="{\'col-md-10\' : settings.checkables, \'col-md-12\': !settings.checkables}" ng-click="itemClick(getPropertyForObject(option,settings.idProp))">' +
 				'{{getPropertyForObject(option, settings.displayProp)}}' +
 				'</div>' +
 				'</div>' +
-				'<div ng-show="isChecked(getPropertyForObject(option,settings.idProp))" ng-transclude></div>' +
+				'<div ng-transclude>' +
+				'</div>' +
 				'</li>';
 
 			template += '</ul>';

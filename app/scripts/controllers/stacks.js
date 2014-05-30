@@ -28,6 +28,7 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 			{
 				$scope.selectedStack = clickedStack;
 				$scope.checkedLangsModel = $scope.selectedStack.languages;
+				$scope.selectedCat = undefined;
 			}};
 
 		$scope.langsListEvents = {
@@ -117,8 +118,6 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 			}
 		});
 
-
-
 		$scope.addMissingCategory = function(language)
 		{
 			var modalInstance = $modal.open({
@@ -134,6 +133,7 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 
 			modalInstance.result.then(function (createdObj) {
 				$scope.categories.push(createdObj);
+				$scope.rebuildFilteredCategories($scope.selectedLang);
 			});
 		};
 
@@ -144,17 +144,17 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 				controller: 'AddMissingToolController',
 				resolve: {
 					languageId: function() {
-						return $scope.onWorkLanguage._id;
+						return $scope.selectedLang._id;
 					},
 					categories: function()
 					{
-						var relevantCategories = $filter('filter')($scope.categories, $scope.filterCategories);
-						return relevantCategories;
+						return $scope.categories;
 					}
 				}});
 
 			modalInstance.result.then(function (createdObj) {
 				$scope.tools.push(createdObj);
+				$scope.rebuildFilteredTools($scope.selectedLang, $scope.selectedCat);
 			});
 		};
 
@@ -171,11 +171,15 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 		};
 
         $scope.saveStack = function() {
-			console.log($scope.selectedStack);
+			var stackObj = angular.copy($scope.selectedStack);
+			delete stackObj._id;
+			delete stackObj.createdAt;
+			delete stackObj.updatedAt;
+			delete stackObj.__v;
 
-			/*StacksService.edit($scope.selectedStack._id, $scope.addEditStackObj).then(function(response) {
-				console.log(response);
-			});*/
+			StacksService.edit($scope.selectedStack._id, stackObj).then(function(response) {
+				AlertsHandlerService.addSuccess('Stack "' + stackObj.title + '" Successfully Updated!');
+			});
         };
     }
 ]);

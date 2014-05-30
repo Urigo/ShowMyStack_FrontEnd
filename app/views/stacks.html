@@ -1,4 +1,4 @@
-{{checkedLangsModel | json}}
+<div alerts-panel clear-on-init="true"></div>
 <div class="row">
     <div class="col-md-2">
         <div class="well items-list">
@@ -16,7 +16,7 @@
                         extra-settings="langsListSettings"></smart-list>
         </div>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-3">
         <div class="well items-list" ng-if="selectedLang">
             <button class="btn btn-info pull-right" ng-click="addMissingCategory()">Add Category</button>
             <h4>What do you use for..</h4>
@@ -25,23 +25,23 @@
                         extra-settings="catsListSettings"></smart-list>
         </div>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-3">
         <div class="well items-list" ng-if="selectedCat">
             <button class="btn btn-info pull-right" ng-click="addMissingTool()">Add Tool</button>
             <h4>How do you do {{ selectedCat.categoryName }}?</h4>
             <smart-list checked-model="checkedToolsModel" events="toolsListEvents"
                         options="filteredTools"
                         extra-settings="toolsListSettings">
-                <div>
+                <div ng-show="isChecked(getPropertyForObject(option, settings.idProp))">
                     What version do you use?
-                    <select class="form-control" ng-model="currentModel.version">
+                    <select class="form-control" ng-model="getModelForObject(getPropertyForObject(option,settings.idProp)).version">
                         <option value="">Not Specified</option>
-                        <option ng-selected="currentModel.version === item._id"
-                                ng-repeat="item in this.currentOption.versions"
+                        <option ng-selected="getModelForObject(getPropertyForObject(option,settings.idProp)).version === item._id"
+                                ng-repeat="item in this.option.versions"
                                 value="{{item._id}}">{{item.versionNumber}}</option>
                     </select>
                 </div>
-                        </smart-list>
+            </smart-list>
         </div>
     </div>
     <div class="col-md-2">
