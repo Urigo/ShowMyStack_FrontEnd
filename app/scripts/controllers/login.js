@@ -11,7 +11,7 @@ showMyStackApp.controller('LoginController', ['$scope', 'AuthService', 'AlertsHa
             AlertsHandlerService.clearAll();
 
             AuthService.login($scope.user).then(function() {
-                $state.go('authorized.main');
+                $state.go('authorized.stacks');
             });
         };
     }
