@@ -3,229 +3,125 @@
 /**
  * Created by dotansimha on 5/15/14.
  */
-showMyStackApp.directive('smartList', ['$filter', function($filter) {
+
+showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', function ($filter, $document, $compile) {
 	return {
-		restrict: 'EA',
-		scope: {
-			selectedModel: '=',
-			maxSelected: '@',
-			styles: '=',
-			events: '=',
-			externalModelProp: '@'
+		restrict: 'AE',
+		scope:{
+			checkedModel: '=',
+			options: '=',
+			extraSettings: '=',
+			events: '='
 		},
-		replace: true,
 		transclude: true,
-		template: '<ul ng-click="handleClickEvent($event)" class="list-group checked-list-box" ng-transclude=""></ul>',
-		controller: ['$scope', function ($scope) {
-			this.items = $scope.selectedModel || {};
-			this.registeredItems = {};
-			this.singleSelectionMode = false;
-			this.styles = angular.extend({classSelected: 'list-group-item-info active', classNotSelected: '', classLastClickedItem: 'list-group-item-primary'}, $scope.styles);
-			this.events = angular.extend({initDone: angular.noop, lastClickedChanged: angular.noop, itemAddedToSelection: angular.noop, itemRemovedFromSelection: angular.noop}, $scope.events);
+		template: function(element, attrs)
+		{
+			var template = '';
+			template += '<ul class="list-group">';
+			template += '<li ng-init="currentOption = option; currentModel = getModelForObject(getPropertyForObject(option,settings.idProp))" class="list-group-item" ng-class="{\'list-group-item-info\': lastClickedId === getPropertyForObject(option,settings.idProp)}" data-ng-repeat="option in options">' +
+				'<div class="row">' +
+				'<div class="col-md-3" ng-show="settings.checkables" ng-click="setSelectedItem(getPropertyForObject(option,settings.idProp))" data-ng-class="{\'glyphicon glyphicon-unchecked\': !isChecked(getPropertyForObject(option,settings.idProp)),  \'glyphicon glyphicon-check\': isChecked(getPropertyForObject(option,settings.idProp))}"></div>' +
+				'<div ng-class="{\'col-md-9\' : settings.checkables, \'col-md-12\': !settings.checkables}" ng-click="itemClick(getPropertyForObject(option,settings.idProp))">' +
+				'{{getPropertyForObject(option, settings.displayProp)}}' +
+				'</div>' +
+				'</div>' +
+				'<div ng-show="isChecked(getPropertyForObject(option,settings.idProp))" ng-transclude></div>' +
+				'</li>';
 
-			$scope.handleClickEvent = function($event)
-			{
-				$event.stopImmediatePropagation();
-			};
+			template += '</ul>';
+			template += '</div>';
 
-			if ($scope.maxSelected === '1')
+			element.html(template);
+		},
+		link: function($scope, $element, $attrs){
+			$scope.checkedModel = $scope.checkedModel || [];
+			$scope.lastClickedId = undefined;
+
+			$scope.eventsCallbacks = {itemClicked: angular.noop, itemChecked: angular.noop, itemUnchecked: angular.noop};
+			$scope.eventsCallbacks = angular.extend($scope.eventsCallbacks, $scope.events || {});
+
+			$scope.settings = {
+				displayProp: 'label',
+				idProp: 'id',
+				externalIdProp: 'id',
+				checkables: true,
+				uncheckItemOnClick: true,
+				enableSearch: true};
+
+			angular.extend($scope.settings, $scope.extraSettings || []);
+
+			function getFindObj(id)
 			{
-				this.singleSelectionMode = true;
+				var findObj = {};
+
+				if ($scope.settings.externalIdProp === '')
+				{
+					findObj[$scope.settings.idProp] = id;
+				}
+				else {
+					findObj[$scope.settings.externalIdProp] = id;
+				}
+
+				return findObj;
 			}
 
-			this.registerItem = function(itemId, smartListItemObj)
+			$scope.getPropertyForObject = function(object, property)
 			{
-				this.registeredItems[itemId] = smartListItemObj;
-			};
-
-			this.getRegisteredItem = function(itemId)
-			{
-				return this.registeredItems[itemId];
-			};
-
-			this.getStyles = function()
-			{
-				return this.styles;
-			};
-
-			this.setLastItemClicked = function(item)
-			{
-				if (!item.nonClickable)
-				{
-					var response = this.events.lastClickedChanged(item, this);
-
-					if (angular.isDefined(this.lastClickedItem))
-					{
-						this.lastClickedItem.lastClicked = false;
-					}
-
-					item.lastClicked = true;
-					this.lastClickedItem = item;
-
-					return response;
-				}
-			};
-
-			this.toggleSelectionItem = function(smartListItem)
-			{
-				if (smartListItem.isCheckbox)
-				{
-					if (angular.isUndefined(this.items[smartListItem.id]))
-					{
-						this.events.itemAddedToSelection(smartListItem, this);
-
-						if (this.singleSelectionMode && angular.isDefined(this.lastSelected))
-						{
-							this.toggleSelectionItem(this.lastSelected);
-						}
-
-						if (angular.isDefined($scope.externalModelProp))
-						{
-							var externalObj = {};
-							externalObj[$scope.externalModelProp] = smartListItem.id;
-							this.items[smartListItem.id] = externalObj;
-						}
-						else
-						{
-							this.items[smartListItem.id] = smartListItem.obj;
-						}
-
-						this.lastSelected = smartListItem;
-						smartListItem.isSelected = true;
-
-						if (smartListItem.itemClickOnSelect)
-						{
-							this.setLastItemClicked(smartListItem);
-						}
-					}
-					else
-					{
-						this.events.itemRemovedFromSelection(smartListItem, this);
-
-						smartListItem.isSelected = false;
-						delete this.items[smartListItem.id];
-					}
-				}
-			};
-
-			this.events.initDone(this);
-		}]
-	};
-}]);
-
-showMyStackApp.directive('smartListItemHeader', [function()
-{
-	return {
-		restrict: 'EA',
-		replace: true,
-		scope: false,
-		transclude: true,
-		template: '<div class="row">' +
-			'<div ng-show="$$prevSibling.currentItem.isCheckbox" class="col-md-2 right-seperator" ng-click="$$prevSibling.toggleSelection($event)">' +
-				'<span class="glyphicon" ng-class="{\'glyphicon-check\': $$prevSibling.currentItem.isSelected, \'glyphicon-unchecked\': !$$prevSibling.currentItem.isSelected}"></span>' +
-			'</div>' +
-			'<div class="col-md-10" ng-transclude></div>' +
-			'</div>',
-		require: '^smartListItem',
-		link: function(scope, elem, attrs, smartListItemInstance) {
-		}
-	};
-}]);
-
-showMyStackApp.directive('smartListItemBody', [function()
-{
-	return {
-		restrict: 'EA',
-		replace: true,
-		scope: false,
-		transclude: true,
-		template: '<div ng-show="(openBodyOnClick && $$prevSibling.currentItem.lastClicked) || (!openBodyOnClick && $$prevSibling.currentItem.isSelected)" class="row smart-list-item-body"><div class="col-md-12" ng-transclude></div>',
-		require: '^smartListItem',
-		link: function(scope, elem, attrs, smartListItemInstance) {
-
-		}
-	};
-}]);
-
-showMyStackApp.directive('smartListItem', [function() {
-	return {
-		restrict: 'EA',
-		scope: {
-			itemValue: '=',
-			itemIdProp: '@',
-			itemCheckbox: '@',
-			nonClickable: '@',
-			itemSelectOnClick: '@',
-			itemClickOnSelect: '@',
-			openBody: '@'
-		},
-		replace: true,
-		transclude: true,
-		template: '<li ng-click="itemClick($event)" ng-transclude class="list-group-item" ng-class="currentItem.lastClicked ? styles.classLastClickedItem : (currentItem.isSelected ? styles.classSelected : styles.classNotSelected)">' +
-			'</li>',
-		require: '^smartList',
-		controller: ['$scope', function($scope)
-		{
-
-		}],
-		link: function (scope, elem, attrs, smartListInstance) {
-			scope.smartListInstance = smartListInstance;
-			scope.styles = smartListInstance.getStyles();
-
-			scope.getItemId = function(itemValue, itemIdProp)
-			{
-				if (angular.isDefined(scope.nonClickable))
-				{
-					return 'non-clickable';
-				}
-
-				if (itemValue.hasOwnProperty(itemIdProp))
-				{
-					return itemValue[itemIdProp];
+				if (object.hasOwnProperty(property)) {
+					return object[property];
 				}
 
 				return '';
 			};
 
-			scope.itemClick = function($event)
+			$scope.itemClick = function(id)
 			{
-				$event.stopImmediatePropagation();
+				$scope.setSelectedItem(id, $scope.settings.uncheckItemOnClick);
 
-				if ($event.originalEvent.target.classList[0] !== 'form-control') {
-					var response = smartListInstance.setLastItemClicked(scope.currentItem);
+				var findObj = {};
+				findObj[$scope.settings.idProp] = id;
 
-					if (angular.isUndefined(response) || response)
-					{
-						if (scope.currentItem.itemSelectOnClick) {
-							scope.toggleSelection();
+				$scope.eventsCallbacks.itemClicked(_.find($scope.options, findObj));
+				$scope.lastClickedId = id;
+			};
+
+			$scope.setSelectedItem = function(id, dontRemove){
+				dontRemove = dontRemove || false;
+				var findObj = getFindObj(id);
+
+				if ($scope.settings.checkables)
+				{
+					var exists = _.findIndex($scope.checkedModel, findObj) !== -1;
+
+					if (!dontRemove && exists) {
+						$scope.checkedModel.splice(_.findIndex($scope.checkedModel, findObj), 1);
+					} else if (!exists) {
+						if ($scope.settings.externalIdProp === '')
+						{
+							var fullObjFind = getFindObj(id);
+							var fullObj = _.find($scope.options, fullObjFind);
+							$scope.checkedModel.push(fullObj);
 						}
+						else
+						{
+							$scope.checkedModel.push(findObj);
+						}
+
 					}
 				}
 			};
 
-			scope.toggleSelection = function($event)
-			{
-				smartListInstance.toggleSelectionItem(scope.currentItem);
-
-				if (angular.isDefined($event))
-				{
-					$event.stopImmediatePropagation();
-				}
-
+			$scope.getModelForObject = function (id) {
+				return _.find($scope.checkedModel, getFindObj(id));
 			};
 
-			scope.currentItem = {
-				nonClickable: angular.isDefined(scope.nonClickable) ? true : false,
-				isCheckbox: angular.isDefined(scope.itemCheckbox) ? true : false,
-				lastClicked: false,
-				isSelected: false,
-				openBodyOnClick: angular.isDefined(scope.openBody) && scope.openBody === 'click',
-				itemSelectOnClick: angular.isDefined(scope.itemSelectOnClick) ? true : false,
-				itemClickOnSelect: angular.isDefined(scope.itemClickOnSelect) ? true : false,
-				obj: scope.itemValue,
-				id: scope.getItemId(scope.itemValue, scope.itemIdProp)};
+			$scope.isChecked = function (id) {
+				if (_.findIndex($scope.checkedModel, getFindObj(id)) !== -1) {
+					return true;
+				}
 
-			smartListInstance.registerItem(scope.currentItem.id, scope.currentItem);
+				return false;
+			};
 		}
 	};
 }]);

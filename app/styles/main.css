@@ -48,7 +48,7 @@
 /* Responsive: Portrait tablets and up */
  @media screen and (min-width: 768px) {
     /* Remove the padding we set earlier */
-    .header, .marketing, .footer {
+    .header, .marketing, .footer, {
         padding-left: 0;
         padding-right: 0;
     }
@@ -111,4 +111,11 @@
 .smart-list-item-body
 {
     background-color: #cecece;
+}
+
+.full-view
+{
+    margin-left: 1px;
+    margin-right: 1px;
+    width: 100%;
 }

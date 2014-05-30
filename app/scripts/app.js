@@ -21,23 +21,6 @@ var showMyStackApp = angular
             $urlRouterProvider.otherwise('/');
 
             $stateProvider
-                .state('authorized.main', {
-                    url: '/',
-                    controller: 'MainController',
-                    templateUrl: 'views/main.html',
-                    resolve: {
-                        stacks: ['StacksService',
-                            function(StacksService) {
-                                return StacksService.getAll();
-                            }
-                        ],
-                        categories: ['DataService',
-                            function(DataService) {
-                                return DataService.getAllCategories();
-                            }
-                        ]
-                    }
-                })
 				.state('error', {
 					url: '/error',
 					templateUrl: 'views/errors/server_down.html'
@@ -60,63 +43,30 @@ var showMyStackApp = angular
                     abstract: true,
                     templateUrl: 'views/authorize_template.html'
                 })
-                .state('authorized.addStack', {
-                    url: '/addStack',
-                    title: 'Add New Stack',
-                    doActionText: 'Add New Stack!',
-                    controller: 'AddEditStackController',
-                    templateUrl: 'views/add_edit_stack.html',
+                .state('authorized.stacks', {
+                    url: '/',
+                    controller: 'StacksController',
+                    templateUrl: 'views/stacks.html',
                     resolve: {
+						stacks: ['StacksService',
+							function(StacksService) {
+								return StacksService.getAll();
+							}
+						],
                         languages: ['DataService',
                             function(DataService) {
                                 return DataService.getAllLanguages();
                             }
                         ],
-                        stackInfo: [
-                            function() {
-                                return undefined;
-                            }
-                        ],
+						tools: ['DataService',
+							function(DataService) {
+								return DataService.getAllTools();
+							}
+						],
 						categories: ['DataService', function(DataService)
 						{
 							return DataService.getAllCategories();
 						}]
-                    }
-                })
-                .state('authorized.editStack', {
-                    url: '/editStack/:stackId',
-                    title: 'Edit Existing Stack',
-                    doActionText: 'Save Stack!',
-                    controller: 'AddEditStackController',
-                    templateUrl: 'views/add_edit_stack.html',
-                    resolve: {
-                        languages: ['DataService',
-                            function(DataService) {
-                                return DataService.getAllLanguages();
-                            }
-                        ],
-                        stackInfo: ['StacksService', '$stateParams',
-                            function(StacksService, $stateParams) {
-                                return StacksService.getById($stateParams.stackId);
-                            }
-                        ]
-                    }
-                })
-				.state('authorized.viewStack', {
-                    url: '/stack/:stackId',
-                    controller: 'ViewStackController',
-                    templateUrl: 'views/view_stack.html',
-                    resolve: {
-						categories: ['DataService',
-							function(DataService) {
-								return DataService.getAllCategories();
-							}
-						],
-                        stackInfo: ['StacksService', '$stateParams',
-                            function(StacksService, $stateParams) {
-                                return StacksService.getByIdFull($stateParams.stackId);
-                            }
-                        ]
                     }
                 })
                 .state('authorized.profile', {

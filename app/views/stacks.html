@@ -1,0 +1,53 @@
+{{checkedLangsModel | json}}
+<div class="row">
+    <div class="col-md-2">
+        <div class="well items-list">
+            <button class="btn btn-info pull-right" ng-click="addNewStack()">Add New Project</button>
+            <h4>Projects</h4>
+            <smart-list checked-model="checkedStacksModel" events="stacksListEvents" options="stacks"
+                        extra-settings="stacksListSettings">
+                        </smart-list>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="well items-list" ng-if="selectedStack">
+            <h4>What languages do you use?</h4>
+            <smart-list checked-model="checkedLangsModel" events="langsListEvents" options="languages"
+                        extra-settings="langsListSettings"></smart-list>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="well items-list" ng-if="selectedLang">
+            <button class="btn btn-info pull-right" ng-click="addMissingCategory()">Add Category</button>
+            <h4>What do you use for..</h4>
+            <smart-list checked-model="checkedCatsModel" events="catsListEvents"
+                        options="filteredCategories"
+                        extra-settings="catsListSettings"></smart-list>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="well items-list" ng-if="selectedCat">
+            <button class="btn btn-info pull-right" ng-click="addMissingTool()">Add Tool</button>
+            <h4>How do you do {{ selectedCat.categoryName }}?</h4>
+            <smart-list checked-model="checkedToolsModel" events="toolsListEvents"
+                        options="filteredTools"
+                        extra-settings="toolsListSettings">
+                <div>
+                    What version do you use?
+                    <select class="form-control" ng-model="currentModel.version">
+                        <option value="">Not Specified</option>
+                        <option ng-selected="currentModel.version === item._id"
+                                ng-repeat="item in this.currentOption.versions"
+                                value="{{item._id}}">{{item.versionNumber}}</option>
+                    </select>
+                </div>
+                        </smart-list>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="well items-list" ng-if="selectedCat">
+            <h4>Done editing {{selectedStack.name}}?</h4>
+            <button class="btn btn-success" ng-click="saveStack()">Click Here To Save!</button>
+        </div>
+    </div>
+</div>
