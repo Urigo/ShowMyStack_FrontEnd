@@ -10,14 +10,14 @@
         </div>
     </div>
     <div class="col-md-2">
-        <div class="well items-list" ng-if="selectedStack">
+        <div class="well items-list animate-if" ng-if="selectedStack">
             <h4>What languages do you use?</h4>
             <smart-list checked-model="checkedLangsModel" events="langsListEvents" options="languages"
                         extra-settings="langsListSettings"></smart-list>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="well items-list" ng-if="selectedLang">
+        <div class="well items-list animate-if" ng-if="selectedLang">
             <button class="btn btn-info pull-right" ng-click="addMissingCategory()">Add Category</button>
             <h4>What do you use for..</h4>
             <smart-list checked-model="checkedCatsModel" events="catsListEvents"
@@ -26,16 +26,15 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="well items-list" ng-if="selectedCat">
+        <div class="well items-list animate-if" ng-if="selectedCat">
             <button class="btn btn-info pull-right" ng-click="addMissingTool()">Add Tool</button>
             <h4>How do you do {{ selectedCat.categoryName }}?</h4>
             <smart-list checked-model="checkedToolsModel" events="toolsListEvents"
                         options="filteredTools"
                         extra-settings="toolsListSettings">
                 <div ng-show="isChecked(getPropertyForObject(option, settings.idProp))">
-                    What version do you use?
                     <select class="form-control" ng-model="getModelForObject(getPropertyForObject(option,settings.idProp)).version">
-                        <option value="">Not Specified</option>
+                        <option value="">Select Version</option>
                         <option ng-selected="getModelForObject(getPropertyForObject(option,settings.idProp)).version === item._id"
                                 ng-repeat="item in this.option.versions"
                                 value="{{item._id}}">{{item.versionNumber}}</option>

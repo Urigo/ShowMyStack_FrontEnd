@@ -5,6 +5,7 @@ var showMyStackApp = angular
         'ngCookies',
         'ngResource',
         'ngSanitize',
+		'ngAnimate',
         'ngRoute',
         'ui.router',
         'ui.bootstrap',
