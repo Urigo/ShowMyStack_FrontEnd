@@ -182,7 +182,10 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 
 			angular.forEach(langs, function(value)
 			{
-				total += langs.length;
+				if (angular.isDefined(value.tools))
+				{
+					total += value.tools.length;
+				}
 			});
 
 			return total;
