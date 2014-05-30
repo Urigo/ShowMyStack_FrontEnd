@@ -18,10 +18,10 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 		$scope.checkedCatsModel = [];
 		$scope.checkedToolsModel = [];
 
-		$scope.stacksListSettings = {idProp: '_id', displayProp: 'title', externalIdProp: '', checkables: false};
+		$scope.stacksListSettings = {idProp: '_id', displayProp: 'title', externalIdProp: '', checkables: false, enableSearch: true};
 		$scope.langsListSettings = {idProp: '_id', displayProp: 'langName', externalIdProp: 'lang'};
-		$scope.catsListSettings = {idProp: '_id', displayProp: 'categoryName', externalIdProp: '', checkables: false};
-		$scope.toolsListSettings = {idProp: '_id', displayProp: 'toolName', externalIdProp: 'tool'};
+		$scope.catsListSettings = {idProp: '_id', displayProp: 'categoryName', externalIdProp: '', checkables: false, enableSearch: true};
+		$scope.toolsListSettings = {idProp: '_id', displayProp: 'toolName', externalIdProp: 'tool', enableSearch: true, itemButtonText: 'i'};
 
 		$scope.stacksListEvents = {
 			itemClicked: function(clickedStack)
@@ -35,8 +35,6 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 		$scope.langsListEvents = {
 			itemClicked: function(clickedLang)
 			{
-				//$scope.selectedCat = undefined;
-
 				$scope.selectedLang = clickedLang;
 
 				var lang = $filter('filter')($scope.selectedStack.languages, {lang: $scope.selectedLang._id})[0];
@@ -53,6 +51,22 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 			itemClicked: function(clickedCat)
 			{
 				$scope.selectedCat = clickedCat;
+			}
+		};
+
+		$scope.toolsListEvents = {
+			itemButtonAction: function(item)
+			{
+				var modalInstance = $modal.open({
+					templateUrl: 'views/tool_info.html',
+					controller: 'ToolInfoController',
+					resolve: {
+						tool: function()
+						{
+							return item;
+						}
+					}
+				});
 			}
 		};
 

@@ -17,13 +17,14 @@ showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', funct
 		template: function(element, attrs)
 		{
 			var template = '';
-			template += '<ul class="list-group">';
-			template += '<li class="list-group-item" ng-class="{\'list-group-item-info\': lastClickedId === getPropertyForObject(option,settings.idProp)}" data-ng-repeat="option in options">' +
+			template += '<ul class="list-group"><li ng-show="settings.enableSearch" class="list-group-item"><input type="text" class="form-control" ng-model="searchModel" placeholder="Search..." /></li>';
+			template += '<li class="list-group-item" ng-class="{\'list-group-item-info\': lastClickedId === getPropertyForObject(option,settings.idProp)}" data-ng-repeat="option in options | filter: searchModel">' +
 				'<div class="row">' +
 				'<div class="col-md-2" ng-show="settings.checkables" ng-click="setSelectedItem(getPropertyForObject(option,settings.idProp))" data-ng-class="{\'glyphicon glyphicon-unchecked\': !isChecked(getPropertyForObject(option,settings.idProp)),  \'glyphicon glyphicon-check\': isChecked(getPropertyForObject(option,settings.idProp))}"></div>' +
-				'<div class="cursor-pointer" ng-class="{\'col-md-10\' : settings.checkables, \'col-md-12\': !settings.checkables}" ng-click="itemClick(getPropertyForObject(option,settings.idProp))">' +
+				'<div class="cursor-pointer" ng-class="{\'col-md-10\' : settings.checkables, \'col-md-12\': !settings.checkables, \'col-md-6\': settings.itemButtonText !== \'\' && settings.checkables, \'col-md-9\': settings.itemButtonText !== \'\' && !settings.checkables}" ng-click="itemClick(getPropertyForObject(option,settings.idProp))">' +
 				'{{getPropertyForObject(option, settings.displayProp)}}' +
 				'</div>' +
+				'<div ng-show="settings.itemButtonText !== \'\'" class="col-md-3"><button class="btn btn-info btn-xs pull-right" ng-click="events.itemButtonAction(findFullItem(getPropertyForObject(option,settings.idProp)))">{{settings.itemButtonText}}</button></div>' +
 				'</div>' +
 				'<div ng-transclude>' +
 				'</div>' +
@@ -38,7 +39,7 @@ showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', funct
 			$scope.checkedModel = $scope.checkedModel || [];
 			$scope.lastClickedId = undefined;
 
-			$scope.eventsCallbacks = {itemClicked: angular.noop, itemChecked: angular.noop, itemUnchecked: angular.noop};
+			$scope.eventsCallbacks = {itemClicked: angular.noop, itemChecked: angular.noop, itemUnchecked: angular.noop, itemButtonAction: angular.noop};
 			$scope.eventsCallbacks = angular.extend($scope.eventsCallbacks, $scope.events || {});
 
 			$scope.settings = {
@@ -47,7 +48,8 @@ showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', funct
 				externalIdProp: 'id',
 				checkables: true,
 				uncheckItemOnClick: true,
-				enableSearch: true};
+				enableSearch: false,
+				itemButtonText: ''};
 
 			angular.extend($scope.settings, $scope.extraSettings || []);
 
@@ -75,14 +77,19 @@ showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', funct
 				return '';
 			};
 
+			$scope.findFullItem = function(id)
+			{
+				var findObj = {};
+				findObj[$scope.settings.idProp] = id;
+
+				return _.find($scope.options, findObj);
+			};
+
 			$scope.itemClick = function(id)
 			{
 				$scope.setSelectedItem(id, $scope.settings.uncheckItemOnClick);
 
-				var findObj = {};
-				findObj[$scope.settings.idProp] = id;
-
-				$scope.eventsCallbacks.itemClicked(_.find($scope.options, findObj));
+				$scope.eventsCallbacks.itemClicked($scope.findFullItem(id));
 				$scope.lastClickedId = id;
 			};
 
