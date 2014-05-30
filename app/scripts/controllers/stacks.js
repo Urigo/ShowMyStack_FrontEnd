@@ -191,6 +191,8 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
         $scope.saveStack = function() {
 			var stackObj = angular.copy($scope.selectedStack);
 			delete stackObj._id;
+			delete stackObj.createdBy;
+			delete stackObj.updatedBy;
 			delete stackObj.createdAt;
 			delete stackObj.updatedAt;
 			delete stackObj.__v;
