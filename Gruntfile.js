@@ -210,12 +210,6 @@ module.exports = function(grunt) {
 						[/(\/bower_components\/bootstrap\/dist\/fonts)/g, 'god help me', function(match) {
 							return match.replace('/bower_components/bootstrap/dist/fonts', '../fonts');
 						}]
-					],
-					js: [
-						[/(localhost\:8001)/g, 'h', function(match)
-						{
-							return match.replace('localhost:8001', 'showmystack.heroku.com');
-						}]
 					]
 				}
 			}
