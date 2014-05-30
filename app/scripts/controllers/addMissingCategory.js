@@ -1,12 +1,12 @@
 'use strict';
 
-showMyStackApp.controller('AddMissingCategoryController', ['$scope', '$modalInstance', 'DataService', 'languages',
-	function($scope, $modalInstance, DataService, languages)
+showMyStackApp.controller('AddMissingCategoryController', ['$scope', '$modalInstance', 'DataService', 'languages', 'languageId',
+	function($scope, $modalInstance, DataService, languages, languageId)
 	{
 		$scope.addCategoryObj = {};
 		$scope.languages = languages;
 		$scope.multiselectDropdownLangsOptions = {displayProp: 'langName', idProp: '_id', externalIdProp: 'id'};
-		$scope.selectedLanguages = [];
+		$scope.selectedLanguages = [{id: languageId}];
 
 		$scope.addCategory = function()
 		{

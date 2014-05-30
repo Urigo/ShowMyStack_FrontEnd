@@ -133,6 +133,10 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 					languages: function()
 					{
 						return $scope.languages;
+					},
+					languageId: function()
+					{
+						return $scope.selectedLang._id;
 					}
 				}
 			});
@@ -151,6 +155,10 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 				resolve: {
 					languageId: function() {
 						return $scope.selectedLang._id;
+					},
+					categoryId: function()
+					{
+						return $scope.selectedCat._id;
 					},
 					categories: function()
 					{

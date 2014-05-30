@@ -21,10 +21,10 @@ showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', funct
 			template += '<li class="list-group-item" ng-class="{\'list-group-item-info\': lastClickedId === getPropertyForObject(option,settings.idProp)}" data-ng-repeat="option in options | filter: searchModel">' +
 				'<div class="row">' +
 				'<div class="col-md-2" ng-show="settings.checkables" ng-click="setSelectedItem(getPropertyForObject(option,settings.idProp))" data-ng-class="{\'glyphicon glyphicon-unchecked\': !isChecked(getPropertyForObject(option,settings.idProp)),  \'glyphicon glyphicon-check\': isChecked(getPropertyForObject(option,settings.idProp))}"></div>' +
-				'<div class="cursor-pointer" ng-class="{\'col-md-10\' : settings.checkables, \'col-md-12\': !settings.checkables, \'col-md-6\': settings.itemButtonText !== \'\' && settings.checkables, \'col-md-9\': settings.itemButtonText !== \'\' && !settings.checkables}" ng-click="itemClick(getPropertyForObject(option,settings.idProp))">' +
+				'<div class="cursor-pointer" ng-class="{\'col-md-10\' : settings.checkables, \'col-md-12\': !settings.checkables, \'col-md-8\': settings.itemButtonText !== \'\' && settings.checkables, \'col-md-10\': settings.itemButtonText !== \'\' && !settings.checkables}" ng-click="itemClick(getPropertyForObject(option,settings.idProp))">' +
 				'{{getPropertyForObject(option, settings.displayProp)}}' +
 				'</div>' +
-				'<div ng-show="settings.itemButtonText !== \'\'" class="col-md-3"><button class="btn btn-info btn-xs pull-right" ng-click="events.itemButtonAction(findFullItem(getPropertyForObject(option,settings.idProp)))">{{settings.itemButtonText}}</button></div>' +
+				'<div ng-show="settings.itemButtonText !== \'\'" class="col-md-2"><button class="btn btn-info btn-xs pull-right" ng-click="events.itemButtonAction(findFullItem(getPropertyForObject(option,settings.idProp)))">{{settings.itemButtonText}}</button></div>' +
 				'</div>' +
 				'<div ng-transclude>' +
 				'</div>' +

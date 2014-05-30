@@ -1,11 +1,11 @@
 'use strict';
 
-showMyStackApp.controller('AddMissingToolController', ['$scope', '$modalInstance', 'GithubService', 'DataService', 'languageId', 'categories',
-	function($scope, $modalInstance, GithubService, DataService, languageId, categories)
+showMyStackApp.controller('AddMissingToolController', ['$scope', '$modalInstance', 'GithubService', 'DataService', 'languageId', 'categories', 'categoryId',
+	function($scope, $modalInstance, GithubService, DataService, languageId, categories, categoryId)
 	{
 		$scope.categories = categories;
 		$scope.addToolObj = {};
-		$scope.selectedCategories = [];
+		$scope.selectedCategories = [{id: categoryId}];
 		$scope.multiselectDropdownCatsOptions = {displayProp: 'categoryName', idProp: '_id', externalIdProp: 'id'};
 		$scope.ghModel = {};
 
