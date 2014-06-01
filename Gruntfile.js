@@ -37,6 +37,22 @@ module.exports = function(grunt) {
                 }
             }
         },
+
+		'string-replace': {
+			dist: {
+				files: {
+					'dist/scripts/': 'dist/scripts/*.js'
+				},
+				options: {
+					replacements: [
+						{
+							pattern: 'localhost:8001',
+							replacement: 'showmystack.herokuapp.com'
+						}
+					]
+				}
+			}
+		},
         // Project settings
         yeoman: {
             // configurable paths
@@ -411,7 +427,8 @@ module.exports = function(grunt) {
         'uglify',
         'rev',
         'usemin',
-        'htmlmin'
+        'htmlmin',
+		'string-replace'
     ]);
 
     grunt.registerTask('default', [
@@ -421,4 +438,5 @@ module.exports = function(grunt) {
     ]);
 
     grunt.loadNpmTasks('grunt-build-control');
+	grunt.loadNpmTasks('grunt-string-replace');
 };
