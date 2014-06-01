@@ -13,8 +13,9 @@ showMyStackApp.controller('AddStackController', ['$scope', '$modalInstance', 'Gi
 				GithubService.getRepoInfo({
 					user: newValue.username,
 					repo: newValue.repo
-				}, function(response) {
-
+				}).then(function(response)
+				{
+					console.log(response);
 				});
 			}
 		}, true);

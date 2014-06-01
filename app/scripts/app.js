@@ -14,7 +14,8 @@ var showMyStackApp = angular
         'multi-select',
         'checklist-model',
 		'angularjs-dropdown-multiselect',
-		'angularjs-github-url-input'
+		'angularjs-github-url-input',
+		'btford.markdown'
     ])
     .config(['$stateProvider', '$urlRouterProvider',
         function($stateProvider, $urlRouterProvider) {
