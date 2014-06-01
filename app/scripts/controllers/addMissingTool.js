@@ -1,11 +1,22 @@
 'use strict';
 
-showMyStackApp.controller('AddMissingToolController', ['$scope', '$modalInstance', 'GithubService', 'DataService', 'languageId', 'categories', 'categoryId',
-	function($scope, $modalInstance, GithubService, DataService, languageId, categories, categoryId)
+showMyStackApp.controller('AddMissingToolController', ['$scope', '$modalInstance', 'GithubService', 'DataService', 'languageId', 'categories', 'categoryId', 'languages', 'baseObj',
+	function($scope, $modalInstance, GithubService, DataService, languageId, categories, categoryId, languages, baseObj)
 	{
 		$scope.categories = categories;
 		$scope.addToolObj = {};
-		$scope.selectedCategories = [{id: categoryId}];
+		$scope.selectedCategories = [];
+		$scope.selectedLanguage = languageId;
+		$scope.languages = languages;
+		$scope.multiselectDropdownLangsOptions = {displayProp: 'langName', idProp: '_id', externalIdProp: 'id'};
+		$scope.selectedLanguages = [];
+		$scope.addToolObj = angular.extend({}, baseObj);
+
+		if (categoryId !== null)
+		{
+			$scope.selectedCategories.push({id: categoryId});
+		}
+
 		$scope.multiselectDropdownCatsOptions = {displayProp: 'categoryName', idProp: '_id', externalIdProp: 'id'};
 		$scope.ghModel = {};
 
@@ -16,16 +27,18 @@ showMyStackApp.controller('AddMissingToolController', ['$scope', '$modalInstance
 				GithubService.getRepoInfo({
 					user: newValue.username,
 					repo: newValue.repo
-				}, function(response) {
-					$scope.addToolObj.toolName = response.data.name || '';
+				}).then(function(response) {
+					if (!angular.isDefined($scope.addToolObj.toolName))
+					{
+						$scope.addToolObj.toolName = response.data.name || '';
+					}
 				});
 
-				GithubService.getRepoInfo({
+				GithubService.getRepoTags({
 					user: newValue.username,
-					repo: newValue.repo,
-					spec: 'tags'
-				}, function(response) {
-					$scope.addToolObj.versions = _.pluck(response.data || [], 'name');
+					repo: newValue.repo
+				}).then(function(response) {
+					$scope.addToolObj.versions = _.pluck(response || [], 'name');
 				});
 			}
 		}, true);
@@ -33,7 +46,16 @@ showMyStackApp.controller('AddMissingToolController', ['$scope', '$modalInstance
 		$scope.addTool = function()
 		{
 			var tempObj = angular.copy($scope.addToolObj);
-			tempObj.language = languageId;
+
+			if ($scope.selectedLanguage === null)
+			{
+				tempObj.language = _.pluck($scope.selectedLanguages, 'id')[0];
+			}
+			else
+			{
+				tempObj.language = languageId;
+			}
+
 			tempObj.categories = _.pluck($scope.selectedCategories, 'id');
 
 			var versArray = [];

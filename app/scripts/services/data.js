@@ -26,10 +26,6 @@ showMyStackApp.service('DataService', ['Restangular',
             return toolState.getAll();
         };
 
-		this.getToolsByLanguageAndCategory = function(langId, catId) {
-			return toolState.one('language', langId).one('category', catId).get();
-		};
-
         this.getAllCategories = function() {
             return categoryState.getAll();
         };

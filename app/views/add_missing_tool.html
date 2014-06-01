@@ -22,6 +22,12 @@
                 <div ng-dropdown-multiselect id="cats" selected-model="selectedCategories" options="categories"
                      extra-settings="multiselectDropdownCatsOptions"></div>
             </div>
+            <div class="form-group" ng-if="selectedLanguage === null">
+                <br /><br />
+                <label>Relevant Language - PICK ONLY ONE ! ! !</label>
+                <div ng-dropdown-multiselect selected-model="selectedLanguages" options="languages"
+                     extra-settings="multiselectDropdownLangsOptions"></div>
+            </div>
         </div>
     </form>
 </div>

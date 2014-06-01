@@ -14,6 +14,25 @@
                 <input type="text" class="form-control" id="name" placeholder="Enter name"
                        ng-model="addStackObj.title" />
             </div>
+            <div ng-show="isLoadingCheckDeps">
+                Loading Bower Dependecies...
+            </div>
+            <div class="form-group" ng-show="bowerPackages.length > 0">
+                <label for="bower">Packages from Bower.json</label>
+                <ul class="list-group" id="bower">
+                    <li class="list-group-item" ng-repeat="package in bowerPackages">
+                        <div class="row">
+                            <div class="col-md-9">
+                                {{ package.name }}
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-info" tooltip="This tool is missing!"
+                                        tooltip-trigger="mouseenter" ng-click="addMissingTool(package)" ng-if="!package.existsInTools">Add</button>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
     </form>
 </div>

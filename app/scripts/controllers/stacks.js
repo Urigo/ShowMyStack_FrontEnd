@@ -89,13 +89,16 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 			var toolsArr = [];
 
 			angular.forEach($scope.tools, function (tool) {
-				var relevantCats = $filter('filter')(tool.categories, function(value)
+				if (angular.isDefined(selectedCategory))
 				{
-					return value === selectedCategory._id;
-				});
+					var relevantCats = $filter('filter')(tool.categories, function(value)
+					{
+						return value === selectedCategory._id;
+					});
 
-				if (tool.language === $scope.selectedLang._id && relevantCats.length > 0) {
-					toolsArr.push(tool);
+					if (tool.language === $scope.selectedLang._id && relevantCats.length > 0) {
+						toolsArr.push(tool);
+					}
 				}
 			});
 
@@ -147,17 +150,35 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 			});
 		};
 
-		$scope.addMissingTool = function()
+		$scope.addMissingTool = function(baseObj)
 		{
+			baseObj = baseObj || {};
+
 			var modalInstance = $modal.open({
 				templateUrl: 'views/add_missing_tool.html',
 				controller: 'AddMissingToolController',
 				resolve: {
 					languageId: function() {
+						if (angular.isUndefined($scope.selectedLang)) {
+							return null;
+						}
+
 						return $scope.selectedLang._id;
+					},
+					baseObj: function()
+					{
+						return baseObj;
+					},
+					languages: function()
+					{
+						return $scope.languages;
 					},
 					categoryId: function()
 					{
+						if (angular.isUndefined($scope.selectedCat)) {
+							return null;
+						}
+
 						return $scope.selectedCat._id;
 					},
 					categories: function()
@@ -176,7 +197,17 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 		{
 			var modalInstance = $modal.open({
 				templateUrl: 'views/add_stack.html',
-				controller: 'AddStackController'
+				controller: 'AddStackController',
+				resolve: {
+					tools: function()
+					{
+						return $scope.tools;
+					},
+					missingToolHandler: function()
+					{
+						return $scope.addMissingTool;
+					}
+				}
 			});
 
 			modalInstance.result.then(function (createdObj) {

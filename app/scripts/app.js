@@ -127,6 +127,12 @@ var showMyStackApp = angular
                 return extension;
             });
 
+			RestangularProvider.addElementTransformer('github', true, function(github) {
+				github.addRestangularMethod('getFile', 'post', 'file');
+
+				return github;
+			});
+
             RestangularProvider.addElementTransformer('auth', true, function(auth) {
                 auth.addRestangularMethod('register', 'post', 'register');
                 auth.addRestangularMethod('login', 'post', 'login');

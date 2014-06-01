@@ -8,8 +8,16 @@ showMyStackApp.service('GithubService', ['Restangular',
 			return githubState.one('repo', infoObj.user).one(infoObj.repo).get();
         };
 
+        this.getRepoTags = function(infoObj) {
+			return githubState.one('tags', infoObj.user).one(infoObj.repo).get();
+        };
+
         this.getReadme = function(infoObj) {
 			return githubState.one('readme', infoObj.user).one(infoObj.repo).get();
+        };
+
+        this.getFileContent = function(infoObj) {
+			return githubState.getFile(infoObj);
         };
     }
 ]);
