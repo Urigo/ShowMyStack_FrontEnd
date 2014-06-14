@@ -37,7 +37,7 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 			{
 				$scope.selectedLang = clickedLang;
 
-				var lang = $filter('filter')($scope.selectedStack.languages, {lang: $scope.selectedLang._id})[0];
+				var lang = $filter('filter')($scope.languages, {_id: $scope.selectedLang._id})[0];
 
 				if (angular.isUndefined(lang.tools))
 				{

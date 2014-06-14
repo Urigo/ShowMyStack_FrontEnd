@@ -85,9 +85,14 @@ showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', funct
 				return _.find($scope.options, findObj);
 			};
 
-			$scope.itemClick = function(id)
+			$scope.itemClick = function(id, dontSelect)
 			{
-				$scope.setSelectedItem(id, $scope.settings.uncheckItemOnClick);
+				dontSelect = dontSelect || false;
+
+				if (!dontSelect)
+				{
+					$scope.setSelectedItem(id, $scope.settings.uncheckItemOnClick);
+				}
 
 				$scope.eventsCallbacks.itemClicked($scope.findFullItem(id));
 				$scope.lastClickedId = id;
@@ -104,6 +109,11 @@ showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', funct
 					if (!dontRemove && exists) {
 						$scope.checkedModel.splice(_.findIndex($scope.checkedModel, findObj), 1);
 					} else if (!exists) {
+						if (id !== $scope.lastClickedId)
+						{
+							$scope.itemClick(id, true);
+						}
+
 						if ($scope.settings.externalIdProp === '')
 						{
 							var fullObjFind = getFindObj(id);
@@ -124,11 +134,7 @@ showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', funct
 			};
 
 			$scope.isChecked = function (id) {
-				if (_.findIndex($scope.checkedModel, getFindObj(id)) !== -1) {
-					return true;
-				}
-
-				return false;
+				return _.findIndex($scope.checkedModel, getFindObj(id)) !== -1;
 			};
 		}
 	};
