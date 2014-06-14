@@ -115,6 +115,7 @@ var showMyStackApp = angular
 
             RestangularProvider.addElementTransformer('category', true, function(category) {
                 category.addRestangularMethod('add', 'post', 'add');
+                category.addRestangularMethod('edit', 'put', 'edit');
                 category.addRestangularMethod('getAll', 'get', 'all');
 
                 return category;

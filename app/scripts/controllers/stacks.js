@@ -20,8 +20,8 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 
 		$scope.stacksListSettings = {idProp: '_id', displayProp: 'title', externalIdProp: '', checkables: false, enableSearch: true};
 		$scope.langsListSettings = {idProp: '_id', displayProp: 'langName', externalIdProp: 'lang'};
-		$scope.catsListSettings = {idProp: '_id', displayProp: 'categoryName', externalIdProp: '', checkables: false, enableSearch: true};
-		$scope.toolsListSettings = {idProp: '_id', displayProp: 'toolName', externalIdProp: 'tool', enableSearch: true, itemButtonText: 'i'};
+		$scope.catsListSettings = {idProp: '_id', displayProp: 'categoryName', externalIdProp: '', checkables: false, enableSearch: true, itemButtonText: '<span class="glyphicon glyphicon-edit"></span>'};
+		$scope.toolsListSettings = {idProp: '_id', displayProp: 'toolName', externalIdProp: 'tool', enableSearch: true, itemButtonText: '<span class="glyphicon glyphicon-info-sign"></span>'};
 
 		$scope.stacksListEvents = {
 			itemClicked: function(clickedStack)
@@ -54,6 +54,10 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 			itemClicked: function(clickedCat)
 			{
 				$scope.selectedCat = clickedCat;
+			},
+			itemButtonAction: function(item)
+			{
+				$scope.addMissingCategory(item);
 			}
 		};
 
@@ -130,12 +134,18 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 			}
 		});
 
-		$scope.addMissingCategory = function(language)
+		$scope.addMissingCategory = function(category)
 		{
+			category = category || null;
+
 			var modalInstance = $modal.open({
 				templateUrl: 'views/add_missing_category.html',
 				controller: 'AddMissingCategoryController',
 				resolve: {
+					category: function()
+					{
+						return category;
+					},
 					languages: function()
 					{
 						return $scope.languages;
@@ -148,7 +158,15 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 			});
 
 			modalInstance.result.then(function (createdObj) {
-				$scope.categories.push(createdObj);
+				if (category === null)
+				{
+					$scope.categories.push(createdObj);
+				}
+				else
+				{
+					angular.extend(category, createdObj);
+				}
+
 				$scope.rebuildFilteredCategories($scope.selectedLang);
 			});
 		};

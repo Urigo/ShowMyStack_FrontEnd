@@ -4,7 +4,7 @@
  * Created by dotansimha on 5/15/14.
  */
 
-showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', function ($filter, $document, $compile) {
+showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', '$sce', function ($filter, $document, $compile, $sce) {
 	return {
 		restrict: 'AE',
 		scope:{
@@ -24,7 +24,7 @@ showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', funct
 				'<div class="cursor-pointer" ng-class="{\'col-md-10\' : settings.checkables, \'col-md-12\': !settings.checkables, \'col-md-8\': settings.itemButtonText !== \'\' && settings.checkables, \'col-md-10\': settings.itemButtonText !== \'\' && !settings.checkables}" ng-click="itemClick(getPropertyForObject(option,settings.idProp))">' +
 				'{{getPropertyForObject(option, settings.displayProp)}}' +
 				'</div>' +
-				'<div ng-show="settings.itemButtonText !== \'\'" class="col-md-2"><button class="btn btn-info btn-xs pull-right" ng-click="events.itemButtonAction(findFullItem(getPropertyForObject(option,settings.idProp)))">{{settings.itemButtonText}}</button></div>' +
+				'<div ng-show="settings.itemButtonText !== \'\'" class="col-md-2"><button class="btn btn-info btn-xs pull-right" ng-click="events.itemButtonAction(findFullItem(getPropertyForObject(option,settings.idProp)))" ng-bind-html="settings.itemButtonText"></button></div>' +
 				'</div>' +
 				'<div ng-transclude>' +
 				'</div>' +
@@ -52,6 +52,8 @@ showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', funct
 				itemButtonText: ''};
 
 			angular.extend($scope.settings, $scope.extraSettings || []);
+
+			$scope.settings.itemButtonText = $sce.trustAsHtml($scope.settings.itemButtonText);
 
 			function getFindObj(id)
 			{

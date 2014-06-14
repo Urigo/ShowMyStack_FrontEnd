@@ -14,6 +14,10 @@ showMyStackApp.service('DataService', ['Restangular',
             return categoryState.add(catObj);
         };
 
+        this.editCategory = function(id, catObj) {
+			return categoryState.customPUT(catObj, 'edit/' + id);
+        };
+
         this.addTool = function(toolObj) {
             return toolState.add(toolObj);
         };
