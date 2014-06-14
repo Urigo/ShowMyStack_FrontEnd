@@ -5,13 +5,13 @@ showMyStackApp.controller('AddMissingCategoryController', ['$scope', '$modalInst
 	{
 		$scope.addCategoryObj = {};
 		$scope.languages = languages;
-		$scope.multiselectDropdownLangsOptions = {displayProp: 'langName', idProp: '_id', externalIdProp: 'id'};
+		$scope.multiselectDropdownLangsOptions = {displayProp: 'langName', idProp: '_id', externalIdProp: '_id'};
 		$scope.selectedLanguages = [{id: languageId}];
 
 		$scope.addCategory = function()
 		{
 			var tempObj = angular.copy($scope.addCategoryObj);
-			tempObj.languages = _.pluck($scope.selectedLanguages, 'id');
+			tempObj.languages = _.pluck($scope.selectedLanguages, '_id');
 
 			DataService.addCategory(tempObj).then(function(response) {
 				$modalInstance.close(response);
