@@ -230,6 +230,15 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 			return total;
 		};
 
+		$scope.$watch('selectedStack', function(newValue)
+		{
+			if (angular.isDefined(newValue))
+			{
+				$scope.saveStack();
+			}
+		}, true);
+
+
         $scope.saveStack = function() {
 			var stackObj = angular.copy($scope.selectedStack);
 			delete stackObj._id;
@@ -239,9 +248,7 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 			delete stackObj.updatedAt;
 			delete stackObj.__v;
 
-			StacksService.edit($scope.selectedStack._id, stackObj).then(function(response) {
-				AlertsHandlerService.addSuccess('Stack "' + stackObj.title + '" Successfully Updated!');
-			});
+			StacksService.edit($scope.selectedStack._id, stackObj);
         };
     }
 ]);
