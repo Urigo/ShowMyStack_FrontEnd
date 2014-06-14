@@ -20,7 +20,7 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 
 		$scope.stacksListSettings = {idProp: '_id', displayProp: 'title', externalIdProp: '', checkables: false, enableSearch: true};
 		$scope.langsListSettings = {idProp: '_id', displayProp: 'langName', externalIdProp: 'lang'};
-		$scope.catsListSettings = {idProp: '_id', displayProp: 'categoryName', externalIdProp: '', checkables: false, enableSearch: true, itemButtonText: '<span class="glyphicon glyphicon-edit"></span>'};
+		$scope.catsListSettings = {idProp: '_id', displayProp: 'categoryName', externalIdProp: '', checkables: false, enableSearch: true, itemButtonText: '<span class="glyphicon glyphicon-edit"></span>', itemPrefixProp: 'listPrefix'};
 		$scope.toolsListSettings = {idProp: '_id', displayProp: 'toolName', externalIdProp: 'tool', enableSearch: true, itemButtonText: '<span class="glyphicon glyphicon-info-sign"></span>'};
 
 		$scope.stacksListEvents = {
@@ -82,8 +82,20 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 			var catsArr = [];
 
 			angular.forEach($scope.categories, function (category) {
-				if ($filter('filter')(category.languages, selectedLang._id).length > 0) {
-					catsArr.push(category);
+				if (angular.isUndefined(category.parentCategory) || category.parentCategory === null)
+				{
+					if ($filter('filter')(category.languages, selectedLang._id).length > 0) {
+						category.listPrefix = '';
+						category.childs = [];
+						catsArr.push(category);
+					}
+
+					angular.forEach($filter('filter')($scope.categories, {parentCategory: category._id}), function(sonCat)
+					{
+						sonCat.listPrefix = '<img src="images/child_icon.png" />';
+						category.childs.push(sonCat._id);
+						catsArr.push(sonCat);
+					});
 				}
 			});
 
@@ -100,7 +112,7 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 				{
 					var relevantCats = $filter('filter')(tool.categories, function(value)
 					{
-						return value === selectedCategory._id;
+						return value === selectedCategory._id || _.contains(selectedCategory.childs, value);
 					});
 
 					if (tool.language === $scope.selectedLang._id && relevantCats.length > 0) {
@@ -153,6 +165,10 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 					languageId: function()
 					{
 						return $scope.selectedLang._id;
+					},
+					categories: function()
+					{
+						return $scope.categories;
 					}
 				}
 			});

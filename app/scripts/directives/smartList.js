@@ -22,7 +22,7 @@ showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', '$sce
 				'<div class="row">' +
 				'<div class="col-md-2" ng-show="settings.checkables" ng-click="setSelectedItem(getPropertyForObject(option,settings.idProp))" data-ng-class="{\'glyphicon glyphicon-unchecked\': !isChecked(getPropertyForObject(option,settings.idProp)),  \'glyphicon glyphicon-check\': isChecked(getPropertyForObject(option,settings.idProp))}"></div>' +
 				'<div class="cursor-pointer" ng-class="{\'col-md-10\' : settings.checkables, \'col-md-12\': !settings.checkables, \'col-md-8\': settings.itemButtonText !== \'\' && settings.checkables, \'col-md-10\': settings.itemButtonText !== \'\' && !settings.checkables}" ng-click="itemClick(getPropertyForObject(option,settings.idProp))">' +
-				'{{getPropertyForObject(option, settings.displayProp)}}' +
+				'<span ng-show="settings.itemPrefixProp !== \'\'" ng-bind-html="getPropertyForObject(option, settings.itemPrefixProp, true)"></span><span> {{getPropertyForObject(option, settings.displayProp)}}</span>' +
 				'</div>' +
 				'<div ng-show="settings.itemButtonText !== \'\'" class="col-md-2"><button class="btn btn-info btn-xs pull-right" ng-click="events.itemButtonAction(findFullItem(getPropertyForObject(option,settings.idProp)))" ng-bind-html="settings.itemButtonText"></button></div>' +
 				'</div>' +
@@ -49,7 +49,8 @@ showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', '$sce
 				checkables: true,
 				uncheckItemOnClick: true,
 				enableSearch: false,
-				itemButtonText: ''};
+				itemButtonText: '',
+				itemPrefixProp: ''};
 
 			angular.extend($scope.settings, $scope.extraSettings || []);
 
@@ -70,10 +71,19 @@ showMyStackApp.directive('smartList', ['$filter', '$document', '$compile', '$sce
 				return findObj;
 			}
 
-			$scope.getPropertyForObject = function(object, property)
+			$scope.getPropertyForObject = function(object, property, htmlTrust)
 			{
+				htmlTrust = htmlTrust || false;
+
 				if (object.hasOwnProperty(property)) {
-					return object[property];
+					if (htmlTrust)
+					{
+						return $sce.trustAsHtml(object[property]);
+					}
+					else
+					{
+						return object[property];
+					}
 				}
 
 				return '';

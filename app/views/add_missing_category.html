@@ -10,7 +10,13 @@
                        ng-model="addCategoryObj.categoryName" />
             </div>
             <div class="form-group">
-                <label>Relevant Languages</label>
+                <label for="parent">Parent Category</label>
+                <div ng-dropdown-multiselect id="parent" selected-model="selectedParentCategory" options="fatherCategories"
+                     extra-settings="multiselectDropdownParentOptions"></div>
+            </div>
+            <br /><br />
+            <div class="form-group" ng-show="selectedParentCategory._id === null">
+                <label for="cats">Relevant Languages</label>
                 <div ng-dropdown-multiselect id="cats" selected-model="selectedLanguages" options="languages"
                      extra-settings="multiselectDropdownLangsOptions"></div>
             </div>
