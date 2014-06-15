@@ -88,14 +88,16 @@ showMyStackApp.controller('StacksController', ['$scope', 'StacksService', 'Githu
 						category.listPrefix = '';
 						category.childs = [];
 						catsArr.push(category);
+
+						angular.forEach($filter('filter')($scope.categories, {parentCategory: category._id}), function(sonCat)
+						{
+							sonCat.listPrefix = '<img src="images/child_icon.png" />';
+							category.childs.push(sonCat._id);
+							catsArr.push(sonCat);
+						});
 					}
 
-					angular.forEach($filter('filter')($scope.categories, {parentCategory: category._id}), function(sonCat)
-					{
-						sonCat.listPrefix = '<img src="images/child_icon.png" />';
-						category.childs.push(sonCat._id);
-						catsArr.push(sonCat);
-					});
+
 				}
 			});
 

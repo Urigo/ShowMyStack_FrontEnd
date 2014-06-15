@@ -33,7 +33,7 @@ showMyStackApp.controller('AddMissingCategoryController', ['$scope', '$modalInst
 			$scope.isEdit = true;
 			$scope.actionName = 'Edit';
 
-			$scope.selectedParentCategory = {}; // TODO
+			$scope.selectedParentCategory = {_id: category.parentCategory};
 		}
 		else
 		{
