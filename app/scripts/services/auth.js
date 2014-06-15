@@ -8,6 +8,11 @@ showMyStackApp.service('AuthService', ['Restangular', 'User',
             return authState.register(userObj);
         };
 
+		this.setGithubToken = function(token)
+		{
+			return authState.ghLogin({token: token});
+		};
+
         this.login = function(userObj) {
             var loginPromise = authState.login(userObj);
 

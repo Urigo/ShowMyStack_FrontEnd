@@ -79,7 +79,6 @@ showMyStackApp.controller('AddMissingCategoryController', ['$scope', '$modalInst
 					$modalInstance.close(response);
 				});
 			}
-
 		};
 
 		$scope.cancel = function()

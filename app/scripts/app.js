@@ -76,6 +76,10 @@ var showMyStackApp = angular
                     controller: 'ProfileController',
                     templateUrl: 'views/profile.html'
                 })
+				.state('authorized.ghLogin', {
+					url: '/ghLogin/?code',
+					controller: 'GithubLoginController'
+				})
                 .state('authorized.logout', {
                     url: '/logout',
                     controller: ['User', '$state',
@@ -139,6 +143,7 @@ var showMyStackApp = angular
                 auth.addRestangularMethod('login', 'post', 'login');
                 auth.addRestangularMethod('fbLogin', 'post', 'fbLogin');
                 auth.addRestangularMethod('fbRegister', 'post', 'fbRegister');
+                auth.addRestangularMethod('ghLogin', 'post', 'ghLogin');
 
                 return auth;
             });
